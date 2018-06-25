@@ -1,18 +1,16 @@
+'use strict'
 /**
 * Builders to be used for HTML construction.
 *
 */
-
 class Bldr {
-
 	constructor(name) {
 		this.name = name;
 		this.attributes = [];
 		this.elements = [];
 	}
-
 	att(name, value) {
-		var att = new Attribute(name, value);
+		let att = new Attribute(name, value);
 		this.attributes.push(att);
 		return this;
 	}
@@ -21,19 +19,17 @@ class Bldr {
 		this.elements.push(bldr);
 		return this;
 	}
-
 	text(text) {
 		this.elements.push (new RawHtml(text));
 		return this;
 	}
-
 	build() {
-		var s = "<" + this.name;
-		for(var i = 0; i< this.attributes.length; i++) {
+		let s = "<" + this.name;
+		for(let i = 0; i< this.attributes.length; i++) {
 			s += " " + this.attributes[i].toString();
 		}
 		s += ">";
-		for(var i = 0; i< this.elements.length; i++) {
+		for(let i = 0; i< this.elements.length; i++) {
 			s += " " + this.elements[i].build();
 		}
 		s += "</" + this.name + ">";
@@ -48,8 +44,7 @@ class Attribute {
 	}
 
 	toString() {
-		var s = "" + this.name + "='" + this.value + "'";
-		return s;
+		return "" + this.name + "='" + this.value + "'";
 	}
 };
 
@@ -61,4 +56,3 @@ class RawHtml {
 		return this.raw;
 	}
 };
-
