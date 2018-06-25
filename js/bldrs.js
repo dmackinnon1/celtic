@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 /**
 * Builders to be used for HTML construction.
 *
