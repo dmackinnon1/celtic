@@ -112,35 +112,40 @@ class Node extends Point {
 		if (this.x%2==0){
 			
 			if (this.east() != null && this.east().junctions.length == 0){
-				this.lines.push(new Line(new Point(this.x+(1/2), this.y), new Point(this.x+(3/2), this.y +1)));
+				this.lines.push(new Line(new Point(this.x+(1/2), this.y), 
+					new Point(this.x+1, this.y-(1/2))));
 			}
 			if (this.south() != null && this.south().junctions.length == 0){
-				this.lines.push(new Line(new Point(this.x, this.y+(1/2)), new Point(this.x-(1/2), this.y +1)));	
+				this.lines.push(new Line(new Point(this.x, this.y+(1/2)), 
+					new Point(this.x+(1/2), this.y +1)));	
 			}
 			if (this.west() != null && this.west().junctions.length == 0){
-				this.lines.push(new Line(new Point(this.x-(1/2), this.y), new Point(this.x-(3/2), this.y -1)));	
+				this.lines.push(new Line(new Point(this.x-(1/2), this.y), 
+					new Point(this.x-1, this.y +(1/2))));	
 			}
 			if (this.north() != null && this.north().junctions.length == 0) {
-				this.lines.push(new Line(new Point(this.x, this.y-(1/2)), new Point(this.x+(1/2), this.y-1)));	
+				this.lines.push(new Line(new Point(this.x, this.y-(1/2)), 
+					new Point(this.x-(1/2), this.y-1)));	
 			}
 		} else {
 			if (this.east() != null && this.east().junctions.length == 0){
-				this.lines.push(new Line(new Point(this.x+(1/2), this.y), new Point(this.x+(3/2), this.y -1)));
+				this.lines.push(new Line(new Point(this.x+(1/2), this.y), 
+					new Point(this.x+1, this.y +(1/2))));
 			}
 			if (this.south() != null && this.south().junctions.length == 0){
-				this.lines.push(new Line(new Point(this.x, this.y+(1/2)), new Point(this.x+1, this.y +(3/2))));
+				this.lines.push(new Line(new Point(this.x, this.y+(1/2)), 
+					new Point(this.x-(1/2), this.y +1)));
 			}
 			if (this.west() !== null && this.west().junctions.length == 0){
-				this.lines.push(new Line(new Point(this.x-(1/2), this.y), new Point(this.x-(3/2), this.y +1)));	
+				this.lines.push(new Line(new Point(this.x-(1/2), this.y), 
+					new Point(this.x-1, this.y -(1/2))));	
 			}
 			if (this.north() != null && this.north().junctions.length == 0) {
-				this.lines.push(new Line(new Point(this.x, this.y-(1/2)), new Point(this.x-(1/2), this.y-1)));	
+				this.lines.push(new Line(new Point(this.x, this.y-(1/2)), 
+					new Point(this.x+(1/2), this.y-1)));	
 			}
-
 		}
-
 	}
-	
 }
 
 /*
