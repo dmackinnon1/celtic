@@ -101,16 +101,46 @@ class Node extends Point {
 
 	//TODO: refine this to draw more detailed polygons based
 	// on the neighboring junctions.
-	polyCalc(){
+	polyCalc2(){
 		this.polygon.push(new Point(this.x+(1/2),this.y));
 		this.polygon.push(new Point(this.x, this.y+(1/2)));
 		this.polygon.push(new Point(this.x-(1/2), this.y));	
 		this.polygon.push(new Point(this.x, this.y-(1/2)));
 	}
 
+	polyCalc(){
+		//north
+		if (this.north() != null && !this.north().hasEWJunction()){
+			this.polygon.push(new Point(this.x, this.y-(1/2)));
+		} else {
+			this.polygon.push(new Point(this.x-(1/4), this.y -(1/4) ));
+			this.polygon.push(new Point(this.x+(1/4), this.y -(1/4) ));
+		}
+		//east
+		if (this.east() != null && !this.east().hasNSJunction()){
+			this.polygon.push(new Point(this.x+(1/2), this.y));	
+		} else {
+			this.polygon.push(new Point(this.x+(1/4), this.y -(1/4) ));
+			this.polygon.push(new Point(this.x+(1/4), this.y +(1/4) ));
+		}
+		//south
+		if (this.south() != null && !this.south().hasEWJunction()){
+			this.polygon.push(new Point(this.x, this.y+(1/2)));
+		} else {
+			this.polygon.push(new Point(this.x+(1/4), this.y +(1/4) ));
+			this.polygon.push(new Point(this.x-(1/4), this.y +(1/4) ));	
+		}
+		//west
+		if (this.west() != null && !this.west().hasNSJunction()){
+			this.polygon.push(new Point(this.x-(1/2),this.y));
+		} else {
+			this.polygon.push(new Point(this.x-(1/4), this.y +(1/4) ));
+			this.polygon.push(new Point(this.x-(1/4), this.y -(1/4) ));	
+		}
+	}
+
 	lineCalc(){
-		if (this.x%2==0){
-			
+		if (this.x%2==0){			
 			if (this.east() != null && this.east().junctions.length == 0){
 				this.lines.push(new Line(new Point(this.x+(1/2), this.y), 
 					new Point(this.x+1, this.y-(1/2))));
@@ -330,7 +360,8 @@ class KnotSVG {
 			let junction = this.g.junctions[j];
 			let line = new Bldr("line").att("x1", junction.sourceNode.x*this.scale).att("y1", junction.sourceNode.y*this.scale)
 				.att("x2", junction.targetNode.x*this.scale).att("y2", junction.targetNode.y*this.scale);
-			line.att().att("stroke-width",this.edge).att("stroke", "black");
+			line.att("stroke-width",this.edge*2.1).att("stroke", "black")
+				.att("stroke-linecap","round");
 			this.svgBldr.elem(line);
 		}
 		return this;
@@ -345,7 +376,8 @@ class KnotSVG {
 					.att("y1", secLine.source.y*this.scale)
 					.att("x2", secLine.target.x*this.scale)
 					.att("y2", secLine.target.y*this.scale)
-					.att("stroke-width",this.edge).att("fill","black").att("stroke", "black");
+					.att("stroke-width",this.edge).att("fill","black").att("stroke", "black")
+					.att("stroke-linecap","round");
 				this.svgBldr.elem(line);
 			}
 		}

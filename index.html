@@ -21,15 +21,14 @@
 <script src="js/bldrs.js"></script>
 <script src="js/celtic.js"></script>
 <script>
-let grid = new Grid(4,10);
+let grid = new Grid(24,8);
 grid.initialize().borders().randomLines();
-let svg = new KnotSVG(grid, 40);
+let svg = new KnotSVG(grid, 25);
 
 $(document).ready(function(){
 	let knot = document.getElementById('knot');
 	knot.innerHTML = svg.init().nodes().junctions().lines().build();
 });
-
 </script>
 <body>
 	<div id='knot' class='framed'></div>
