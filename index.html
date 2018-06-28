@@ -21,9 +21,9 @@
 <script src="js/bldrs.js"></script>
 <script src="js/celtic.js"></script>
 <script>
-let grid = new Grid(24,8);
-grid.initialize().borders().randomLines();
-let svg = new KnotSVG(grid, 25);
+let grid = new Grid(18,10);
+grid.initialize().borders().innerFrame(2).randomLines(20);
+let svg = new KnotSVG(grid, 20).curvyStyle().setBackground("cyan").setForeground("darkgreen");
 
 $(document).ready(function(){
 	let knot = document.getElementById('knot');
