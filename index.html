@@ -21,16 +21,38 @@
 <script src="js/bldrs.js"></script>
 <script src="js/celtic.js"></script>
 <script>
-let grid = new Grid(6,5);
-grid.initialize().borders().innerFrame(2).randomLines(20);
-let svg = new KnotSVG(grid, 40).chunkyStyle();
+function reset(){
+	let grid = new Grid(8,6);
+	grid.initialize().borders();
+	let svg = new KnotSVG(grid, 30).chunkyStyle();
+	interactive.knot = new InteractiveKnot(svg);
+	refreshInteractive();
+};
 
 $(document).ready(function(){
-	let knot = document.getElementById('knot');
-	knot.innerHTML = svg.init().nodes().junctions().lines().build();
+	$("#show").on("click", function(event){
+		interactive.mode = 'show';
+		refreshInteractive();
+	});	
+	$("#edit").on("click", function(event){
+		interactive.mode = 'edit';
+		refreshInteractive();
+	});
+	$("#reset").on("click", function(event){
+		reset();
+	});		
+	interactive.display = document.getElementById('knot');
+	reset();
 });
+
 </script>
 <body>
 	<div id='knot' class='framed'></div>
-</body>
+	<br>
+	<button id="show" class="btn btn-primary">Show</button>
+	<br>
+	<button id="edit" class="btn btn-secondary">Edit</button>
+	<br>
+	<button id="reset" class="btn btn-secondary">Reset</button>
+	</body>
 </html>

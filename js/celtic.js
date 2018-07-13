@@ -1,4 +1,6 @@
-'use strict'
+"use strict";
+let interactive = {};
+interactive.mode = 'edit'; // edit or show
 
 /*
 * A point on the primary grid.
@@ -107,19 +109,19 @@ class Node extends Point {
 	}
 
 	isNorthNeighbor(node){
-		return (isNodeNeighbor(node) && this.y == (node.y+2));
+		return (this.isNodeNeighbor(node) && this.y == (node.y+2));
 	}
 
 	isSouthNeighbor(node){
-		return (isNodeNeighbor(node) && this.y == (node.y-2));	
+		return (this.isNodeNeighbor(node) && this.y == (node.y-2));	
 	}
 
 	isEastNeighbor(node){
-		return (isNodeNeighbor(node) && this.x == (node.x+2));	
+		return (this.isNodeNeighbor(node) && this.x == (node.x-2));	
 	}
 
-	isEastNeighbor(node){
-		return (isNodeNeighbor(node) && this.x == (node.x-2));	
+	isWestNeighbor(node){
+		return (this.isNodeNeighbor(node) && this.x == (node.x+2));	
 	}
 
 	northNorth(){
@@ -220,6 +222,7 @@ class Node extends Point {
 	}
 
 	lineCalc(){
+		this.lines = [];
 		if (this.x%2==0){			
 			if (this.east() != null && this.east().junctions.length == 0){
 				this.lines.push(new Line(new Point(this.x+(1/2), this.y), 
@@ -411,6 +414,10 @@ class Grid {
 		return this.boxFrame(new Point(2*step,2*step), new Point(this.xdim-(2*step +1), this.ydim-(2*step + 1)));
 	}
 
+	nodeAt(x,y){
+		return this.secondaryGrid[x][y];
+	}
+
 	randomLines(probability = 50){
 		//random lines
 		for (let n in this.nodes){
@@ -518,7 +525,7 @@ class KnotSVG {
 		for (let p in this.g.points){
 			let point = this.g.points[p];
 			let dot = new Bldr("circle").att("cx",point.x*this.scale).att("cy", point.y*this.scale);
-			dot.att("r",this.edge).att("stroke-width",0).att("fill","grey");
+			dot.att("r",this.scale/8).att("stroke-width",0).att("fill","grey");
 			this.svgBldr.elem(dot);
 		}
 		return this; 
@@ -528,7 +535,12 @@ class KnotSVG {
 		for (let p in this.g.nodes){
 			let point = this.g.nodes[p];
 			let dot = new Bldr("circle").att("cx",point.x*this.scale).att("cy", point.y*this.scale);
-			dot.att("r",this.edge*2).att("stroke-width",this.edge).att("fill",this.backgroundColor);
+			dot.att("r",this.scale/4).att("stroke-width",this.scale/8).att("fill",this.backgroundColor);
+			dot.att("onclick", "secondaryClick(event)");
+			dot.att("onmouseover","secondaryMouseOver(event)");
+      		dot.att("onmouseout","secondaryMouseOut(event)");
+      		dot.att("data_x",point.x);
+      		dot.att("data_y", point.y);
 			this.svgBldr.elem(dot);
 		}
 		return this; 
@@ -577,11 +589,79 @@ class KnotSVG {
 		}
 		return this;		
 	}
-
+	
 	build(){
 		return this.svgBldr.build();
 	}
 } 
+
+function secondaryClick(event){
+	let dot = event.srcElement;
+	interactive.knot.setSourceOrTarget(
+		dot.getAttribute("data_x"),
+		dot.getAttribute("data_y"));
+};
+
+function secondaryMouseOver(event){
+	//this.setAttribute('opacity', '0.5')
+	event.srcElement.setAttribute('opacity', '0.5');
+};
+
+function secondaryMouseOut(event){
+	event.srcElement.setAttribute('opacity', '1');
+};
+
+
+function refreshInteractive(){
+	if (interactive.mode == 'edit'){
+		interactive.display.innerHTML = 
+			interactive.knot.svg.init().junctions().primaryDots().secondaryDots().build();
+	} else {
+		interactive.display.innerHTML = 
+			interactive.knot.svg.init().junctions().nodes().lines().build();
+	}
+}
+
+class InteractiveKnot{
+	
+	constructor(knotSvg){
+		this.svg = knotSvg;
+		this.source = null;
+	}
+
+	setSourceOrTarget(i,j){
+		console.log("received " + i + ","  +j);
+		console.log(this.svg.g);
+		let other = this.svg.g.nodeAt(i,j);
+		console.log(other);
+		if (this.source == null){
+			this.source = other;
+		} else {
+			let j = null;
+			if (this.source.isWestNeighbor(other)){
+				j = new Junction(this.source, other.east(), other, "EW");
+			} else if (this.source.isEastNeighbor(other)){
+				j = new Junction(this.source, other.west(), other, "EW");
+			} else if (this.source.isNorthNeighbor(other)){
+				j = new Junction(this.source, other.south(), other, "NS");
+			} else if(this.source.isSouthNeighbor(other)){
+				j = new Junction(this.source, other.north(), other, "NS");
+			} else{
+				console.log("neighbor not selected");
+				this.source = other;
+			}
+			if (j != null){
+				this.source = null;
+				console.log("junction formed: ");
+				console.log(j);
+				this.svg.g.junctions.push(j);
+				this.svg.g.calc();
+				refreshInteractive();
+			}
+		}
+	}
+
+}
 
 /**
 * Randomization Utilities
