@@ -11,7 +11,7 @@ $(document).ready(function(){
 	knot.innerHTML = svg.init().nodes().junctions().lines().build();
 });
 ```
-![example](https://raw.githubusercontent.com/dmackinnon1/celtic/master/imgs/green.png)
+![example](https://raw.githubusercontent.com/dmackinnon1/celtic/master/imgs/green2.png)
 
 ## example 2
 
