@@ -1,6 +1,6 @@
 "use strict";
 let interactive = {};
-interactive.mode = 'edit'; // edit or show
+interactive.mode = 'show'; // edit or show
 
 /*
 * A point on the primary grid.
@@ -417,6 +417,9 @@ class Grid {
 	nodeAt(x,y){
 		return this.secondaryGrid[x][y];
 	}
+	pointAt(x,y){
+		return this.primaryGrid[x][y];
+	}
 
 	randomLines(probability = 50){
 		//random lines
@@ -521,31 +524,6 @@ class KnotSVG {
 		return this;
 	}
 
-	primaryDots(){
-		for (let p in this.g.points){
-			let point = this.g.points[p];
-			let dot = new Bldr("circle").att("cx",point.x*this.scale).att("cy", point.y*this.scale);
-			dot.att("r",this.scale/8).att("stroke-width",0).att("fill","grey");
-			this.svgBldr.elem(dot);
-		}
-		return this; 
-	}
-
-	secondaryDots(){
-		for (let p in this.g.nodes){
-			let point = this.g.nodes[p];
-			let dot = new Bldr("circle").att("cx",point.x*this.scale).att("cy", point.y*this.scale);
-			dot.att("r",this.scale/4).att("stroke-width",this.scale/8).att("fill",this.backgroundColor);
-			dot.att("onclick", "secondaryClick(event)");
-			dot.att("onmouseover","secondaryMouseOver(event)");
-      		dot.att("onmouseout","secondaryMouseOut(event)");
-      		dot.att("data_x",point.x);
-      		dot.att("data_y", point.y);
-			this.svgBldr.elem(dot);
-		}
-		return this; 
-	}
-
 	nodes(){
 		for (let n in this.g.nodes){
 			let node = this.g.nodes[n];
@@ -595,44 +573,63 @@ class KnotSVG {
 	}
 } 
 
-function secondaryClick(event){
-	let dot = event.srcElement;
-	interactive.knot.setSourceOrTarget(
-		dot.getAttribute("data_x"),
-		dot.getAttribute("data_y"));
-};
-
-function secondaryMouseOver(event){
-	//this.setAttribute('opacity', '0.5')
-	event.srcElement.setAttribute('opacity', '0.5');
-};
-
-function secondaryMouseOut(event){
-	event.srcElement.setAttribute('opacity', '1');
-};
-
-
-function refreshInteractive(){
-	if (interactive.mode == 'edit'){
-		interactive.display.innerHTML = 
-			interactive.knot.svg.init().junctions().primaryDots().secondaryDots().build();
-	} else {
-		interactive.display.innerHTML = 
-			interactive.knot.svg.init().junctions().nodes().lines().build();
-	}
-}
-
-class InteractiveKnot{
+/* The EditKnotSVG class allows primary and secondary nodes
+ * to be displayed and used to edit the junctions.
+ */
+class EditKnotSVG extends KnotSVG{
 	
-	constructor(knotSvg){
-		this.svg = knotSvg;
+	constructor(g, scale){
+		super(g, scale);
 		this.source = null;
+	}
+	
+	primaryDots(){
+		for (let p in this.g.points){
+			let point = this.g.points[p];
+			let dot = new Bldr("circle").att("cx",point.x*this.scale).att("cy", point.y*this.scale);
+			dot.att("onclick", "primaryClick(event)");
+			dot.att("onmouseover","primaryMouseOver(event)");
+      		dot.att("onmouseout","primaryMouseOut(event)");
+      		dot.att("data_x",point.x);
+      		dot.att("data_y", point.y);			
+			dot.att("r",this.scale/8).att("stroke-width",0).att("fill","grey");
+			this.svgBldr.elem(dot);
+		}
+		return this; 
+	}
+
+	secondaryDots(){
+		for (let p in this.g.nodes){
+			let point = this.g.nodes[p];
+			let dot = new Bldr("circle").att("cx",point.x*this.scale).att("cy", point.y*this.scale);
+			dot.att("r",this.scale/4).att("stroke-width",this.scale/8).att("fill",this.backgroundColor);
+			dot.att("onclick", "secondaryClick(event)");
+			dot.att("onmouseover","secondaryMouseOver(event)");
+      		dot.att("onmouseout","secondaryMouseOut(event)");
+      		dot.att("data_x",point.x);
+      		dot.att("data_y", point.y);
+			this.svgBldr.elem(dot);
+		}
+		return this; 
+	}
+
+	removeJunctionAt(i,j){
+		console.log(i + j);
+		let selected = this.g.pointAt(i,j);
+		console.log(selected);
+		if (selected.junctions.length == 0){
+			return;
+		}
+		let jr = selected.junctions[0];
+		this.g.junctions.splice(this.g.junctions.indexOf(jr),1);
+		selected.junctions = [];
+		this.g.calc();
+		refreshInteractive();
 	}
 
 	setSourceOrTarget(i,j){
 		console.log("received " + i + ","  +j);
-		console.log(this.svg.g);
-		let other = this.svg.g.nodeAt(i,j);
+		let other = this.g.nodeAt(i,j);
 		console.log(other);
 		if (this.source == null){
 			this.source = other;
@@ -654,14 +651,59 @@ class InteractiveKnot{
 				this.source = null;
 				console.log("junction formed: ");
 				console.log(j);
-				this.svg.g.junctions.push(j);
-				this.svg.g.calc();
+				this.g.junctions.push(j);
+				this.g.calc();
 				refreshInteractive();
 			}
 		}
 	}
 
 }
+
+//Functions to accompany EditableKnotSVG
+
+function secondaryClick(event){
+	let dot = event.srcElement;
+	interactive.knot.setSourceOrTarget(
+		dot.getAttribute("data_x"),
+		dot.getAttribute("data_y"));
+};
+
+function primaryClick(event){
+	let dot = event.srcElement;
+	interactive.knot.removeJunctionAt(
+		dot.getAttribute("data_x"),
+		dot.getAttribute("data_y"));
+};
+
+function secondaryMouseOver(event){
+	event.srcElement.setAttribute('opacity', '0.5');
+};
+
+function secondaryMouseOut(event){
+	event.srcElement.setAttribute('opacity', '1');
+};
+
+function primaryMouseOver(event){
+	event.srcElement.setAttribute('opacity', '0.5');
+};
+
+function primaryMouseOut(event){
+	event.srcElement.setAttribute('opacity', '1');
+};
+
+
+
+function refreshInteractive(){
+	if (interactive.mode == 'edit'){
+		interactive.display.innerHTML = 
+			interactive.knot.init().junctions().primaryDots().secondaryDots().build();
+	} else {
+		interactive.display.innerHTML = 
+			interactive.knot.init().junctions().nodes().lines().build();
+	}
+}
+
 
 /**
 * Randomization Utilities

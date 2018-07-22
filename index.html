@@ -11,11 +11,14 @@
 </head>
 <style>
 .framed {
+	text-align: center;	
+	//border-style: solid;
+	//border-width: 10px;
+	//border-color: grey;
+	//padding:20px;
+}
+.centered {
 	text-align: center;
-	border-style: solid;
-	border-width: 10px;
-	border-color: grey;
-	padding:20px;
 }
 </style>
 <script src="js/bldrs.js"></script>
@@ -24,18 +27,27 @@
 function reset(){
 	let grid = new Grid(8,6);
 	grid.initialize().borders();
-	let svg = new KnotSVG(grid, 30).chunkyStyle();
-	interactive.knot = new InteractiveKnot(svg);
+	interactive.knot = new EditKnotSVG(grid, 30).chunkyStyle();
+	interactive.mode='show';
+	resetButtons();
 	refreshInteractive();
 };
 
 $(document).ready(function(){
 	$("#show").on("click", function(event){
 		interactive.mode = 'show';
+		$("#show").addClass('btn-primary');
+		$("#show").removeClass('btn-secondary');
+		$("#edit").removeClass('btn-primary');
+		$("#edit").addClass('btn-secondary');
 		refreshInteractive();
 	});	
 	$("#edit").on("click", function(event){
 		interactive.mode = 'edit';
+		$("#edit").addClass('btn-primary');
+		$("#edit").removeClass('btn-secondary');
+		$("#show").removeClass('btn-primary');
+		$("#show").addClass('btn-secondary');
 		refreshInteractive();
 	});
 	$("#reset").on("click", function(event){
@@ -44,15 +56,52 @@ $(document).ready(function(){
 	interactive.display = document.getElementById('knot');
 	reset();
 });
+function resetButtons(){
+	$("#show").addClass('btn-primary');
+	$("#show").removeClass('btn-secondary');
+	$("#edit").removeClass('btn-primary');
+	$("#edit").addClass('btn-secondary');	
+}
 
 </script>
 <body>
-	<div id='knot' class='framed'></div>
-	<br>
-	<button id="show" class="btn btn-primary">Show</button>
-	<br>
-	<button id="edit" class="btn btn-secondary">Edit</button>
-	<br>
-	<button id="reset" class="btn btn-secondary">Reset</button>
-	</body>
+
+<nav class="navbar navbar-default" style="margin-bottom:0px">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="..">
+				<img src="imgs/github_badge1.png" style="max-width:100%;max-height:100%" >
+			</a>
+			<p class="navbar-text navbar-right">
+				<a href=".." class="navbar-link">dmackinnon1.github.io</a>
+			</p>
+		</div>
+		</div>
+</nav>
+
+<div class="container-fluid">
+	<div class='row'>
+	<div class='col-sm-1 col-lg-3'></div>
+	<div class='col-sm-10 col-lg-6 main-column'>
+		<div class="page-header">
+			<h1>Celtic Knots</h1>
+		</div> 		
+
+		<div id='knot' class='framed'></div>
+		<br>
+		<div class='centered'>
+		<div class="btn-group btn-group-lg" role="group">	
+			<button id="show" class="btn btn-primary">Show</button>
+			<button id="edit" class="btn btn-secondary">Edit</button>
+			<button id="reset" class="btn btn-secondary">Reset</button>
+		</div>
+		</div>
+		<hr>
+	</div>
+	<div class='col-sm-1 col-lg-3'></div>
+	
+	</div>
+</div>
+</body>
 </html>
+	
