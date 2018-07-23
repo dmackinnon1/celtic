@@ -24,15 +24,6 @@
 <script src="js/bldrs.js"></script>
 <script src="js/celtic.js"></script>
 <script>
-function reset(){
-	let grid = new Grid(8,6);
-	grid.initialize().borders();
-	interactive.knot = new EditKnotSVG(grid, 30).chunkyStyle();
-	interactive.mode='show';
-	resetButtons();
-	refreshInteractive();
-};
-
 $(document).ready(function(){
 	$("#show").on("click", function(event){
 		interactive.mode = 'show';
@@ -50,12 +41,111 @@ $(document).ready(function(){
 		$("#show").addClass('btn-secondary');
 		refreshInteractive();
 	});
+	$("#sm-size").on("click", function(event){
+		$("#sm-size").addClass('btn-primary');
+		$("#sm-size").removeClass('btn-secondary');
+		$("#md-size").removeClass('btn-primary');
+		$("#md-size").addClass('btn-secondary');
+		$("#lg-size").removeClass('btn-primary');
+		$("#lg-size").addClass('btn-secondary');
+		size = small;
+		reset();
+	});	
+	$("#md-size").on("click", function(event){
+		$("#md-size").addClass('btn-primary');
+		$("#md-size").removeClass('btn-secondary');
+		$("#sm-size").removeClass('btn-primary');
+		$("#sm-size").addClass('btn-secondary');
+		$("#lg-size").removeClass('btn-primary');
+		$("#lg-size").addClass('btn-secondary');
+		size = medium;
+		reset();
+	});	
+	$("#lg-size").on("click", function(event){
+		$("#lg-size").addClass('btn-primary');
+		$("#lg-size").removeClass('btn-secondary');
+		$("#md-size").removeClass('btn-primary');
+		$("#md-size").addClass('btn-secondary');
+		$("#sm-size").removeClass('btn-primary');
+		$("#sm-size").addClass('btn-secondary');
+		size = large;
+		reset();
+	});	
+	
+	$("#block").on("click", function(event){		
+		$("#block").addClass('btn-primary');
+		$("#block").removeClass('btn-secondary');
+		$("#angle").removeClass('btn-primary');
+		$("#angle").addClass('btn-secondary');
+		$("#curve").removeClass('btn-primary');
+		$("#curve").addClass('btn-secondary');
+		interactive.style = block;
+		applyStyle();
+		refreshInteractive();
+	});	
+	
+	$("#angle").on("click", function(event){		
+		$("#angle").addClass('btn-primary');
+		$("#angle").removeClass('btn-secondary');
+		$("#block").removeClass('btn-primary');
+		$("#block").addClass('btn-secondary');
+		$("#curve").removeClass('btn-primary');
+		$("#curve").addClass('btn-secondary');
+		interactive.style = angle;
+		applyStyle();
+		refreshInteractive();
+	});
+
+	$("#curve").on("click", function(event){		
+		$("#curve").addClass('btn-primary');
+		$("#curve").removeClass('btn-secondary');
+		$("#angle").removeClass('btn-primary');
+		$("#angle").addClass('btn-secondary');
+		$("#block").removeClass('btn-primary');
+		$("#block").addClass('btn-secondary');		
+		interactive.style = curvy;
+		applyStyle();
+		refreshInteractive();
+	});
+
 	$("#reset").on("click", function(event){
 		reset();
 	});		
 	interactive.display = document.getElementById('knot');
 	reset();
 });
+
+let small = [5, 4, 50];
+let medium = [8, 6, 30];
+let large = [16, 10, 18];
+let size = small;
+
+function block(){
+	interactive.knot.blockyStyle();
+}
+function angle(){
+	interactive.knot.chunkyStyle();
+}
+function curvy(){
+	interactive.knot.curvyStyle();
+}
+interactive.style = block;
+
+function applyStyle(){
+	interactive.style();
+}
+
+function reset(){
+	let grid = new Grid(size[0],size[1]);
+	grid.initialize().borders();
+	interactive.knot = new EditKnotSVG(grid, size[2]);
+	interactive.mode='show';
+	resetButtons();
+	applyStyle();
+	refreshInteractive();
+};
+
+
 function resetButtons(){
 	$("#show").addClass('btn-primary');
 	$("#show").removeClass('btn-secondary');
@@ -85,18 +175,40 @@ function resetButtons(){
 	<div class='col-sm-10 col-lg-6 main-column'>
 		<div class="page-header">
 			<h1>Celtic Knots</h1>
-		</div> 		
-
+		</div> 	
+		<button type='button' 
+		class='btn btn-info' data-toggle='collapse' data-target='#mainText'>
+		About </button>
+		<div id='mainText' class='collapse'> <br>
+			You can edit the woven pattern below to create interconnected celtic-style knots.
+			Click the <strong>Edit</strong> button to show the primary (small grey) and secondary (dark black) grid points. Connect two adjacent secondary points (non-diagonal) to form a knot boundary by clicking on one point and then another neighbouring point. Click on the grey midpoint of a boundary to remove it. Click <strong>Show</strong> to reveal the knot pattern.
+		</div>
+	<hr>	
+		<div class='centered'>
+		<div class="btn-group btn-group-md" role="group">	
+			<button id="sm-size" class="btn btn-primary">sm</button>
+			<button id="md-size" class="btn btn-secondary">md</button>
+			<button id="lg-size" class="btn btn-secondary">lg</button>
+		</div>
+		</div>
+		<br>
 		<div id='knot' class='framed'></div>
 		<br>
 		<div class='centered'>
-		<div class="btn-group btn-group-lg" role="group">	
+		<div class="btn-group btn-group-md" role="group">	
 			<button id="show" class="btn btn-primary">Show</button>
 			<button id="edit" class="btn btn-secondary">Edit</button>
 			<button id="reset" class="btn btn-secondary">Reset</button>
 		</div>
 		</div>
 		<hr>
+		<div class='centered'>
+		<div class="btn-group btn-group-md" role="group">	
+			<button id="block" class="btn btn-primary">Block</button>
+			<button id="angle" class="btn btn-secondary">Angle</button>
+			<button id="curve" class="btn btn-secondary">Curve</button>
+		</div>
+		</div>
 	</div>
 	<div class='col-sm-1 col-lg-3'></div>
 	

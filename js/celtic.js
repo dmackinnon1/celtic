@@ -1,6 +1,7 @@
 "use strict";
 let interactive = {};
 interactive.mode = 'show'; // edit or show
+interactive.style = null;
 
 /*
 * A point on the primary grid.
