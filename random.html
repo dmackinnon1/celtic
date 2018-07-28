@@ -64,16 +64,16 @@ $(document).ready(function(){
 	reset();
 });
 
-let width = 210;
+let width = 200;
 let xsmall = [4, 3, width/3];
 let small = [7, 5, width/5];
-let medium = [15, 10, width/10];
-let large = [20, 15, width/15];
+let medium = [15, 10, width/11];
+let large = [22, 15, width/16];
 let size = small;
 
 function reset(){
 	let grid = new Grid(size[0],size[1]);
-	grid.initialize().borders().randomLines(20);
+	grid.initialize().borders().randomLines(size[0]*2);
 	let knot = new KnotSVG(grid, size[2]).chunkyStyle();
 	document.getElementById('knot').innerHTML =  knot.init().nodes().junctions().lines().build();
 };
