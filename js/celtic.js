@@ -1,7 +1,4 @@
 "use strict";
-let interactive = {};
-interactive.mode = 'show'; // edit or show
-interactive.style = null;
 
 /*
 * A point on the primary grid.
@@ -621,8 +618,10 @@ class EditKnotSVG extends KnotSVG{
 		if (selected.junctions.length == 0){
 			return;
 		}
-		let jr = selected.junctions[0];
-		this.g.junctions.splice(this.g.junctions.indexOf(jr),1);
+		for (let k in selected.junctions){
+			let jr = selected.junctions[k];
+			this.g.junctions.splice(this.g.junctions.indexOf(jr),1);
+		}
 		selected.junctions = [];
 		this.g.calc();
 		refreshInteractive();
@@ -661,7 +660,25 @@ class EditKnotSVG extends KnotSVG{
 
 }
 
-//Functions to accompany EditableKnotSVG
+//functions and singleton to accompany EditableKnotSVG
+let interactive = {};
+interactive.mode = 'show'; // edit or show
+interactive.style = curvy;
+
+function block(){
+	interactive.knot.blockyStyle();
+}
+function angle(){
+	interactive.knot.chunkyStyle();
+}
+function curvy(){
+	interactive.knot.curvyStyle();
+}
+interactive.style = angle;
+
+function applyStyle(){
+	interactive.style();
+}
 
 function secondaryClick(event){
 	let dot = event.srcElement;

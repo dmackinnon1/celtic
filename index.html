@@ -12,10 +12,6 @@
 <style>
 .framed {
 	text-align: center;	
-	//border-style: solid;
-	//border-width: 10px;
-	//border-color: grey;
-	//padding:20px;
 }
 .centered {
 	text-align: center;
@@ -41,73 +37,42 @@ $(document).ready(function(){
 		$("#show").addClass('btn-secondary');
 		refreshInteractive();
 	});
+	
+	$("#xs-size").on("click", function(event){
+		$(".gs-btn").removeClass('btn-primary');
+		$(".gs-btn").addClass('btn-secondary');	
+		$("#xs-size").addClass('btn-primary');
+		$("#xs-size").removeClass('btn-secondary');
+		size = xsmall;
+		reset();
+	});	
+	
 	$("#sm-size").on("click", function(event){
+		$(".gs-btn").removeClass('btn-primary');
+		$(".gs-btn").addClass('btn-secondary');	
 		$("#sm-size").addClass('btn-primary');
 		$("#sm-size").removeClass('btn-secondary');
-		$("#md-size").removeClass('btn-primary');
-		$("#md-size").addClass('btn-secondary');
-		$("#lg-size").removeClass('btn-primary');
-		$("#lg-size").addClass('btn-secondary');
 		size = small;
 		reset();
 	});	
+	
 	$("#md-size").on("click", function(event){
+		$(".gs-btn").removeClass('btn-primary');
+		$(".gs-btn").addClass('btn-secondary');		
 		$("#md-size").addClass('btn-primary');
 		$("#md-size").removeClass('btn-secondary');
-		$("#sm-size").removeClass('btn-primary');
-		$("#sm-size").addClass('btn-secondary');
-		$("#lg-size").removeClass('btn-primary');
-		$("#lg-size").addClass('btn-secondary');
 		size = medium;
 		reset();
 	});	
 	$("#lg-size").on("click", function(event){
+		$(".gs-btn").removeClass('btn-primary');
+		$(".gs-btn").addClass('btn-secondary');	
 		$("#lg-size").addClass('btn-primary');
 		$("#lg-size").removeClass('btn-secondary');
-		$("#md-size").removeClass('btn-primary');
-		$("#md-size").addClass('btn-secondary');
-		$("#sm-size").removeClass('btn-primary');
-		$("#sm-size").addClass('btn-secondary');
 		size = large;
 		reset();
 	});	
 	
-	$("#block").on("click", function(event){		
-		$("#block").addClass('btn-primary');
-		$("#block").removeClass('btn-secondary');
-		$("#angle").removeClass('btn-primary');
-		$("#angle").addClass('btn-secondary');
-		$("#curve").removeClass('btn-primary');
-		$("#curve").addClass('btn-secondary');
-		interactive.style = block;
-		applyStyle();
-		refreshInteractive();
-	});	
-	
-	$("#angle").on("click", function(event){		
-		$("#angle").addClass('btn-primary');
-		$("#angle").removeClass('btn-secondary');
-		$("#block").removeClass('btn-primary');
-		$("#block").addClass('btn-secondary');
-		$("#curve").removeClass('btn-primary');
-		$("#curve").addClass('btn-secondary');
-		interactive.style = angle;
-		applyStyle();
-		refreshInteractive();
-	});
-
-	$("#curve").on("click", function(event){		
-		$("#curve").addClass('btn-primary');
-		$("#curve").removeClass('btn-secondary');
-		$("#angle").removeClass('btn-primary');
-		$("#angle").addClass('btn-secondary');
-		$("#block").removeClass('btn-primary');
-		$("#block").addClass('btn-secondary');		
-		interactive.style = curvy;
-		applyStyle();
-		refreshInteractive();
-	});
-
 	$("#reset").on("click", function(event){
 		reset();
 	});		
@@ -115,25 +80,12 @@ $(document).ready(function(){
 	reset();
 });
 
-let small = [5, 4, 50];
-let medium = [8, 6, 30];
-let large = [16, 10, 18];
+let width = 200;
+let xsmall = [4, 3, 200/3];
+let small = [5, 4, 200/4];
+let medium = [6, 5, 200/5];
+let large = [7, 6, 200/6];
 let size = small;
-
-function block(){
-	interactive.knot.blockyStyle();
-}
-function angle(){
-	interactive.knot.chunkyStyle();
-}
-function curvy(){
-	interactive.knot.curvyStyle();
-}
-interactive.style = block;
-
-function applyStyle(){
-	interactive.style();
-}
 
 function reset(){
 	let grid = new Grid(size[0],size[1]);
@@ -186,9 +138,10 @@ function resetButtons(){
 	<hr>	
 		<div class='centered'>
 		<div class="btn-group btn-group-md" role="group">	
-			<button id="sm-size" class="btn btn-primary">sm</button>
-			<button id="md-size" class="btn btn-secondary">md</button>
-			<button id="lg-size" class="btn btn-secondary">lg</button>
+			<button id="xs-size" class="gs-btn btn btn-secondary">xs</button>	
+			<button id="sm-size" class="gs-btn btn btn-primary">sm</button>
+			<button id="md-size" class="gs-btn btn btn-secondary">md</button>
+			<button id="lg-size" class="gs-btn btn btn-secondary">lg</button>
 		</div>
 		</div>
 		<br>
@@ -201,14 +154,7 @@ function resetButtons(){
 			<button id="reset" class="btn btn-secondary">Reset</button>
 		</div>
 		</div>
-		<hr>
-		<div class='centered'>
-		<div class="btn-group btn-group-md" role="group">	
-			<button id="block" class="btn btn-primary">Block</button>
-			<button id="angle" class="btn btn-secondary">Angle</button>
-			<button id="curve" class="btn btn-secondary">Curve</button>
-		</div>
-		</div>
+		<hr>		
 	</div>
 	<div class='col-sm-1 col-lg-3'></div>
 	
