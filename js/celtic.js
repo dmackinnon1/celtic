@@ -150,6 +150,26 @@ class Node extends Point {
 		return null;
 	}
 
+	hasNSJunction(){
+		if (this.north() !== null && this.north().hasNSJunction()){
+			return true;
+		}
+		if (this.south() !== null && this.south().hasNSJunction()){
+			return true;
+		}
+		return false;
+	}
+	
+	hasEWJunction(){
+		if (this.east() !== null && this.east().hasEWJunction()){
+			return true;
+		}
+		if (this.west() !== null && this.west().hasEWJunction()){
+			return true;
+		}
+		return false;
+	}
+
 	polyCalc(){
 		if (this.polyShape == "plain"){
 			this.plainPolyCalc();
@@ -168,10 +188,12 @@ class Node extends Point {
 
 	stylizedPolyCalc(){		
 		this.polygon = []; //reset polygon
+		let sideCount = 0;
 		//north
 		if (this.north() != null && !this.north().hasEWJunction()){
-			this.polygon.push(new Point(this.x, this.y-(1/2)));
+			this.polygon.push(new Point(this.x, this.y-(1/2)));				
 		} else {
+			sideCount ++;
 			this.polygon.push(new Point(this.x-this.bevel, this.y -this.bevel ));
 			this.polygon.push(new Point(this.x+this.bevel, this.y -this.bevel ));
 		}
@@ -182,8 +204,9 @@ class Node extends Point {
 		}
 		//east
 		if (this.east() != null && !this.east().hasNSJunction()){
-			this.polygon.push(new Point(this.x+(1/2), this.y));	
+			this.polygon.push(new Point(this.x+(1/2), this.y));
 		} else {
+			sideCount ++;	
 			this.polygon.push(new Point(this.x+this.bevel, this.y -this.bevel ));
 			this.polygon.push(new Point(this.x+this.bevel, this.y +this.bevel ));
 		}
@@ -196,6 +219,7 @@ class Node extends Point {
 		if (this.south() != null && !this.south().hasEWJunction()){
 			this.polygon.push(new Point(this.x, this.y+(1/2)));
 		} else {
+			sideCount ++;
 			this.polygon.push(new Point(this.x+this.bevel, this.y +this.bevel));
 			this.polygon.push(new Point(this.x-this.bevel, this.y +this.bevel));	
 		}
@@ -208,6 +232,7 @@ class Node extends Point {
 		if (this.west() != null && !this.west().hasNSJunction()){
 			this.polygon.push(new Point(this.x-(1/2),this.y));
 		} else {
+			sideCount ++;
 			this.polygon.push(new Point(this.x-this.bevel, this.y +this.bevel));
 			this.polygon.push(new Point(this.x-this.bevel, this.y -this.bevel));	
 		}
@@ -215,8 +240,15 @@ class Node extends Point {
 		if(this.west() != null && this.west().hasEWJunction()
 			&& this.north() != null && this.north().hasNSJunction()){
 			this.polygon.push(new Point(this.x, this.y));
+		}		
+		if (sideCount == 4){
+			console.log("we have a square at " + this.x + "," + this.y);
+			this.polygon = [];
+			this.polygon.push(new Point(this.x-1,this.y-1));
+			this.polygon.push(new Point(this.x-1,this.y+1));
+			this.polygon.push(new Point(this.x+1,this.y+1));
+			this.polygon.push(new Point(this.x+1,this.y-1));		
 		}
-		
 	}
 
 	lineCalc(){
@@ -267,7 +299,7 @@ class Junction {
 	constructor(sourceNode, medianPoint, targetNode, dir){
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
-		this.medianPoint = medianPoint;
+		this.medianPoint = medianPoint;	
 		this.dir = dir;
 		medianPoint.junction(this);
 	}
