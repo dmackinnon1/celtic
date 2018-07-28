@@ -21,22 +21,6 @@
 <script src="js/celtic.js"></script>
 <script>
 $(document).ready(function(){
-	$("#show").on("click", function(event){
-		interactive.mode = 'show';
-		$("#show").addClass('btn-primary');
-		$("#show").removeClass('btn-secondary');
-		$("#edit").removeClass('btn-primary');
-		$("#edit").addClass('btn-secondary');
-		refreshInteractive();
-	});	
-	$("#edit").on("click", function(event){
-		interactive.mode = 'edit';
-		$("#edit").addClass('btn-primary');
-		$("#edit").removeClass('btn-secondary');
-		$("#show").removeClass('btn-primary');
-		$("#show").addClass('btn-secondary');
-		refreshInteractive();
-	});
 	
 	$("#xs-size").on("click", function(event){
 		$(".gs-btn").removeClass('btn-primary');
@@ -80,30 +64,20 @@ $(document).ready(function(){
 	reset();
 });
 
-let width = 200;
-let xsmall = [4, 3, 200/3];
-let small = [5, 4, 200/4];
-let medium = [6, 5, 200/5];
-let large = [7, 6, 200/6];
+let width = 210;
+let xsmall = [4, 3, width/3];
+let small = [7, 5, width/5];
+let medium = [15, 10, width/10];
+let large = [20, 15, width/15];
 let size = small;
 
 function reset(){
 	let grid = new Grid(size[0],size[1]);
-	grid.initialize().borders();
-	interactive.knot = new EditKnotSVG(grid, size[2]);
-	interactive.mode='show';
-	resetButtons();
-	applyStyle();
-	refreshInteractive();
+	grid.initialize().borders().randomLines(20);
+	let knot = new KnotSVG(grid, size[2]).chunkyStyle();
+	document.getElementById('knot').innerHTML =  knot.init().nodes().junctions().lines().build();
 };
 
-
-function resetButtons(){
-	$("#show").addClass('btn-primary');
-	$("#show").removeClass('btn-secondary');
-	$("#edit").removeClass('btn-primary');
-	$("#edit").addClass('btn-secondary');	
-}
 
 </script>
 <body>
@@ -125,22 +99,16 @@ function resetButtons(){
 	<div class='row'>
 	<div class='col-sm-1 col-lg-3'></div>
 	<div class='col-sm-10 col-lg-6 main-column'>
-		<div class="page-header">
+		<div class="page-header">			
 			<h1>Celtic Knots
 			<div class="btn-group btn-group-md " role="group">
-					<a class="btn nav-button-primary btn-primary" href=".">Editor</a>
-					<a class="btn nav-button-defualt btn-default" href="./random.html">Random</a>
+					<a class="btn nav-button-default btn-default" href=".">Editor</a>
+					<a class="btn nav-button-primary btn-primary" href="./random.html">Random</a>
 			</div>
-		</h1>
 		</div> 	
-		<button type='button' 
-		class='btn btn-info' data-toggle='collapse' data-target='#mainText'>
-		About </button>
-		<div id='mainText' class='collapse'> <br>
-			You can edit the woven pattern below to create interconnected celtic-style knots.
-			Click the <strong>Edit</strong> button to show the primary (small grey) and secondary (dark black) grid points. Connect two adjacent secondary points (non-diagonal) to form a knot boundary by clicking on one point and then another neighbouring point. Click on the grey midpoint of a boundary to remove it. Click <strong>Show</strong> to reveal the knot pattern.
-		</div>
-	<hr>	
+			Generate randomized celtic knot patterns using the
+			options below.
+		<hr>	
 		<div class='centered'>
 		<div class="btn-group btn-group-md" role="group">	
 			<button id="xs-size" class="gs-btn btn btn-secondary">xs</button>	
@@ -154,9 +122,7 @@ function resetButtons(){
 		<br>
 		<div class='centered'>
 		<div class="btn-group btn-group-md" role="group">	
-			<button id="show" class="btn btn-primary">Show</button>
-			<button id="edit" class="btn btn-secondary">Edit</button>
-			<button id="reset" class="btn btn-secondary">Reset</button>
+			<button id="reset" class="btn btn-primary">Randomize</button>
 		</div>
 		</div>
 		<hr>		
