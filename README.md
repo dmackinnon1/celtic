@@ -1,6 +1,6 @@
 # celtic
 Generator and editors for Celtic Knot patterns.
-Please see the live example here: (https://dmackinnon1.github.io/celtic).
+Please see the live example here: https://dmackinnon1.github.io/celtic.
 
 
 ## example 1
