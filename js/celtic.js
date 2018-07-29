@@ -678,13 +678,13 @@ class EditKnotSVG extends KnotSVG{
 			this.source = other;
 		} else {
 			let j = null;
-			if (this.source.isWestNeighbor(other)){
-				j = new Junction(this.source, other.east(), other, "EW");
-			} else if (this.source.isEastNeighbor(other)){
+			if (this.source.isWestNeighbor(other) && other.east().junctions.length == 0){
+					j = new Junction(this.source, other.east(), other, "EW");
+			} else if (this.source.isEastNeighbor(other) && other.west().junctions.length == 0){
 				j = new Junction(this.source, other.west(), other, "EW");
-			} else if (this.source.isNorthNeighbor(other)){
+			} else if (this.source.isNorthNeighbor(other) && other.south().junctions.length == 0){
 				j = new Junction(this.source, other.south(), other, "NS");
-			} else if(this.source.isSouthNeighbor(other)){
+			} else if(this.source.isSouthNeighbor(other)&& other.north().junctions.length == 0){
 				j = new Junction(this.source, other.north(), other, "NS");
 			} else{
 				this.source = other;
