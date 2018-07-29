@@ -1,5 +1,7 @@
 # celtic
-A generator for celtic knot patterns.
+Generator and editors for Celtic Knot patterns.
+Please see the live example here: (https://dmackinnon1.github.io/celtic).
+
 
 ## example 1
 ```{javascript}
