@@ -4,9 +4,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"> 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <title>Celtic Knots</title>
 </head>
 <style>
@@ -57,9 +58,15 @@ $(document).ready(function(){
 		reset();
 	});	
 	
+	$("#randomize").on("click", function(event){
+		randomize();
+	});		
+
 	$("#reset").on("click", function(event){
 		reset();
 	});		
+
+
 	interactive.display = document.getElementById('knot');
 	reset();
 });
@@ -68,32 +75,40 @@ let width = 200;
 let xsmall = [4, 3, width/3];
 let small = [7, 5, width/5];
 let medium = [15, 10, width/11];
-let large = [22, 15, width/16];
+let large = [20, 15, width/16];
 let size = small;
-
+let grid = null;
+let knot = null;
 function reset(){
-	let grid = new Grid(size[0],size[1]);
-	grid.initialize().borders().randomLines(size[0]*2);
-	let knot = new KnotSVG(grid, size[2]).chunkyStyle();
-	document.getElementById('knot').innerHTML =  knot.init().nodes().junctions().lines().build();
+	grid = new Grid(size[0],size[1]);
+	grid.initialize().borders();
+	knot = new KnotSVG(grid, size[2]).chunkyStyle();	
+	redraw();
 };
-
-
+function redraw(){
+	document.getElementById('knot').innerHTML =  knot.init().nodes().junctions().lines().build();	
+}
+function foreground(c='white'){
+	knot.setForeground(c);
+	redraw();
+}
+function background(c='black'){
+	knot.setBackground(c);
+	redraw();
+} 
+function randomize(){
+	grid.randomLines(10);
+	redraw();
+}
 </script>
 <body>
 
-<nav class="navbar navbar-default" style="margin-bottom:0px">
-	<div class="container-fluid">
-		<div class="navbar-header">
+<nav class="navbar navbar-light bg-light" style="margin-bottom:0px">
 			<a class="navbar-brand" href="..">
-				<img src="imgs/github_badge1.png" style="max-width:100%;max-height:100%" >
-			</a>
-			<p class="navbar-text navbar-right">
-				<a href=".." class="navbar-link">dmackinnon1.github.io</a>
-			</p>
-		</div>
-		</div>
+				<img src="imgs/github_badge1.png" width="40" height="40" >
+				dmackinnon1.github.io</a>		
 </nav>
+<br>
 
 <div class="container-fluid">
 	<div class='row'>
@@ -122,9 +137,53 @@ function reset(){
 		<br>
 		<div class='centered'>
 		<div class="btn-group btn-group-md" role="group">	
-			<button id="reset" class="btn btn-primary">Randomize</button>
+			<button id="randomize" class="btn btn-primary">Random</button>
+			<button id="reset" class="btn btn-primary">Reset</button>
+		</div>
+		<br>
+		<br>
+		<div class="btn-group">
+		<div class="dropdown">
+  			<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    		foreground
+  			</button>
+  			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    			<a class="dropdown-item" onclick="foreground('black')" href="#">black</a>
+    			<a class="dropdown-item" onclick="foreground('white')"href="#">white</a>
+    			<a class="dropdown-item" onclick="foreground('darkgreen')"href="#">darkgreen</a>
+    			<a class="dropdown-item" onclick="foreground('lightgreen')"href="#">lightgreen</a>
+    			<a class="dropdown-item" onclick="foreground('steelblue')"href="#">steelblue</a>
+    			<a class="dropdown-item" onclick="foreground('darkblue')"href="#">darkblue</a>
+    			<a class="dropdown-item" onclick="foreground('lightblue')"href="#">lightblue</a>
+    			<a class="dropdown-item" onclick="foreground('red')"href="#">red</a>
+    			<a class="dropdown-item" onclick="foreground('pink')"href="#">pink</a>	
+    			<a class="dropdown-item" onclick="foreground('orange')"href="#">orange</a>
+    			<a class="dropdown-item" onclick="foreground('purple')"href="#">purple</a>
+    			<a class="dropdown-item" onclick="foreground('orangered')"href="#">orangered</a>
+  			</div>
+  		</div>
+  		<div class="dropdown">
+  			 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    		background
+  			</button>
+  			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+  				<a class="dropdown-item" onclick="background('black')" href="#">black</a>
+    			<a class="dropdown-item" onclick="background('white')"href="#">white</a>
+    			<a class="dropdown-item" onclick="background('darkgreen')"href="#">darkgreen</a>
+    			<a class="dropdown-item" onclick="background('lightgreen')"href="#">lightgreen</a>
+    			<a class="dropdown-item" onclick="background('steelblue')"href="#">steelblue</a>
+    			<a class="dropdown-item" onclick="background('darkblue')"href="#">darkblue</a>
+    			<a class="dropdown-item" onclick="background('lightblue')"href="#">lightblue</a>
+    			<a class="dropdown-item" onclick="background('red')"href="#">red</a>
+    			<a class="dropdown-item" onclick="background('pink')"href="#">pink</a>	
+    			<a class="dropdown-item" onclick="background('orange')"href="#">orange</a>
+    			<a class="dropdown-item" onclick="background('purple')"href="#">purple</a>
+    			<a class="dropdown-item" onclick="background('orangered')"href="#">orangered</a>
+  			</div>
+		</div>	
 		</div>
 		</div>
+		<br>
 		<hr>		
 	</div>
 	<div class='col-sm-1 col-lg-3'></div>

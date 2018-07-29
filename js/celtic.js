@@ -242,7 +242,6 @@ class Node extends Point {
 			this.polygon.push(new Point(this.x, this.y));
 		}		
 		if (sideCount == 4){
-			console.log("we have a square at " + this.x + "," + this.y);
 			this.polygon = [];
 			this.polygon.push(new Point(this.x-1,this.y-1));
 			this.polygon.push(new Point(this.x-1,this.y+1));
@@ -447,8 +446,25 @@ class Grid {
 	nodeAt(x,y){
 		return this.secondaryGrid[x][y];
 	}
+
 	pointAt(x,y){
 		return this.primaryGrid[x][y];
+	}
+
+	removeJunctionAt(i,j){
+		let selected = this.pointAt(i,j);
+		if (i == this.xdim -1 || j == this.ydim -1 || i == 0 || j == 0){
+			return;
+		}
+		if (selected.junctions.length == 0){
+			return;
+		}
+		for (let k in selected.junctions){
+			let jr = selected.junctions[k];
+			this.junctions.splice(this.junctions.indexOf(jr),1);
+		}
+		selected.junctions = [];
+		this.calc();
 	}
 
 	randomLines(probability = 50){
@@ -459,14 +475,22 @@ class Grid {
  			if (randomInt(100) > probability) continue;
 			let r = randomInt(4);
 			if (r == 0) {
-				if (node.south() != null && node.southSouth() != null && node.south().junctions.length==0) {
-					junction = new Junction(node, node.south(), node.southSouth(), "NS");
-					this.junctions.push(junction);
+				if (node.south() != null && node.southSouth() != null) {
+					if (node.south().junctions.length==0){
+						junction = new Junction(node, node.south(), node.southSouth(), "NS");
+						this.junctions.push(junction);
+					} else {
+						this.removeJunctionAt(node.south().x, node.south().y);
+					}
 				}
 			} else if (r == 1){
-				if (node.east() != null && node.eastEast() != null && node.east().junctions.length==0){
-					junction = new Junction(node, node.east(), node.eastEast(), "EW");
-					this.junctions.push(junction);		
+				if (node.east() != null && node.eastEast() != null){
+					if (node.east().junctions.length==0){
+						junction = new Junction(node, node.east(), node.eastEast(), "EW");
+						this.junctions.push(junction);	
+					} else {
+						this.removeJunctionAt(node.east().x, node.east().y);		
+					}	
 				}		
 			} else if (r == 2){
 				if (node.north() != null && node.northNorth() != null && node.north().junctions.length==0){
@@ -494,7 +518,6 @@ class KnotSVG {
 	constructor(g, scale){
 		this.g = g;
 		this.scale = scale;
-		g.calc();
 		this.edge = scale/8;
 		this.svgBldr = null;
 		this.backgroundColor = "black";
@@ -548,6 +571,7 @@ class KnotSVG {
 	init(){
 		let height = (this.g.ydim-1)*this.scale;
 		let width = (this.g.xdim -1)*this.scale;
+		this.g.calc();
 		this.svgBldr = new Bldr("svg");
 		this.svgBldr.att("align", "center").att("width", width).att("height", height);
 		this.svgBldr.elem(new Bldr("rect").att("width", width).att("height",height).att("fill",this.foregroundColor));
@@ -644,25 +668,12 @@ class EditKnotSVG extends KnotSVG{
 	}
 
 	removeJunctionAt(i,j){
-		console.log(i + j);
-		let selected = this.g.pointAt(i,j);
-		console.log(selected);
-		if (selected.junctions.length == 0){
-			return;
-		}
-		for (let k in selected.junctions){
-			let jr = selected.junctions[k];
-			this.g.junctions.splice(this.g.junctions.indexOf(jr),1);
-		}
-		selected.junctions = [];
-		this.g.calc();
+		this.g.removeJunctionAt(i,j);
 		refreshInteractive();
 	}
 
 	setSourceOrTarget(i,j){
-		console.log("received " + i + ","  +j);
 		let other = this.g.nodeAt(i,j);
-		console.log(other);
 		if (this.source == null){
 			this.source = other;
 		} else {
@@ -676,13 +687,10 @@ class EditKnotSVG extends KnotSVG{
 			} else if(this.source.isSouthNeighbor(other)){
 				j = new Junction(this.source, other.north(), other, "NS");
 			} else{
-				console.log("neighbor not selected");
 				this.source = other;
 			}
 			if (j != null){
 				this.source = null;
-				console.log("junction formed: ");
-				console.log(j);
 				this.g.junctions.push(j);
 				this.g.calc();
 				refreshInteractive();
