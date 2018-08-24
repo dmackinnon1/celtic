@@ -573,6 +573,7 @@ class KnotSVG {
 		let width = (this.g.xdim -1)*this.scale;
 		this.g.calc();
 		this.svgBldr = new Bldr("svg");
+		this.svgBldr.att("version", "1.1").att("xmlns", "http://www.w3.org/2000/svg").att("xmlns:xlink", "http://www.w3.org/1999/xlink");
 		this.svgBldr.att("align", "center").att("width", width).att("height", height);
 		this.svgBldr.elem(new Bldr("rect").att("width", width).att("height",height).att("fill",this.foregroundColor));
 		return this;
@@ -590,6 +591,19 @@ class KnotSVG {
 			dot.att("stroke-width",this.edge).att("fill",this.backgroundColor).att("stroke", this.backgroundColor);
 			this.svgBldr.elem(dot);
 		}
+		return this;
+	}
+
+	nodeAt(x,y){
+		let node = this.g.nodeAt(x,y);
+		let plist = "";
+			for (let p in node.polygon){
+				let point = node.polygon[p];
+				plist += "" + (point.x*this.scale) + "," +(point.y*this.scale) +" ";
+			}
+			let dot = new Bldr("polygon").att("points",plist);
+			dot.att("stroke-width",this.edge).att("fill",this.backgroundColor).att("stroke", this.backgroundColor);
+			this.svgBldr.elem(dot);
 		return this;
 	}
 
@@ -622,6 +636,22 @@ class KnotSVG {
 		return this;		
 	}
 	
+	linesAt(x,y){	
+			let node = this.g.nodeAt(x,y);
+			for (let l in node.lines){
+				let secLine = node.lines[l];		
+				let line = new Bldr("line").att("x1",secLine.source.x*this.scale)
+					.att("y1", secLine.source.y*this.scale)
+					.att("x2", secLine.target.x*this.scale)
+					.att("y2", secLine.target.y*this.scale)
+					.att("stroke-width",this.edge).att("fill","black").att("stroke", this.backgroundColor)
+					.att("stroke-linecap","round");
+				this.svgBldr.elem(line);
+		}
+		return this;		
+	}
+
+
 	build(){
 		return this.svgBldr.build();
 	}

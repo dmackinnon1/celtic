@@ -88,27 +88,42 @@ $(document).ready(function(){
 	$("#reset").on("click", function(event){
 		reset();
 	});		
+
+	$("#width").on('input change',function(e){
+		reset();
+	});
+
+	$("#height").on('input change',function(e){
+		reset();
+	});
+
+	$("#scale").on('input change',function(e){
+		rescale();
+	});
+
+	$("#randomize").on("click", function(event){
+		randomize();
+	});
+
 	interactive.display = document.getElementById('knot');
 	reset();
 });
 
-let width = 200;
-let xsmall = [4, 3, 200/4];
-let small = [6, 4, 200/5];
-let medium = [7, 5, 200/6];
-let large = [8, 6, 200/7];
-let size = small;
-
 function reset(){
-	let grid = new Grid(size[0],size[1]);
+	let width = parseInt($('#width').val());
+	let height = parseInt($('#height').val());
+	let scale = parseInt($('#scale').val());
+	
+	let grid = new Grid(height,width);
 	grid.initialize().borders();
+	
 	let fg = "white";
 	let bg = "black";
 	if (interactive.knot != null){
 		fg = interactive.knot.foregroundColor;
 		bg = interactive.knot.backgroundColor
 	} 
-	interactive.knot = new EditKnotSVG(grid, size[2]);
+	interactive.knot = new EditKnotSVG(grid, scale);
 	interactive.knot.setForeground(fg);
 	interactive.knot.setBackground(bg);
 	interactive.mode='show';
@@ -117,6 +132,14 @@ function reset(){
 	refreshInteractive();
 };
 
+function rescale(){
+	let scale = parseInt($('#scale').val());
+	let newKnot = new EditKnotSVG(interactive.knot.g, scale);
+	newKnot.setForeground(interactive.knot.foregroundColor);
+	newKnot.setBackground(interactive.knot.backgroundColor);
+	interactive.knot = newKnot;
+	refreshInteractive();
+}
 
 function resetButtons(){
 	$("#show").addClass('btn-primary');
@@ -131,6 +154,13 @@ function foreground(c='white'){
 function background(c='black'){
 	interactive.knot.setBackground(c);
 	refreshInteractive();
+}
+
+function randomize(){
+	if (interactive.knot != null) {
+		interactive.knot.g.randomLines(20);
+		refreshInteractive();
+	}
 }
 </script>
 <body>
@@ -147,10 +177,6 @@ function background(c='black'){
 	<div class='col-sm-10 col-lg-6 main-column'>
 		<div class="page-header">
 			<h1>Celtic Knots
-			<div class="btn-group btn-group-md " role="group">
-					<a class="btn nav-button-primary btn-primary" href=".">Editor</a>
-					<a class="btn nav-button-defualt btn-default" href="./random.html">Random</a>
-			</div>
 			</h1>
 		</div> 	
 		<button type='button' 
@@ -160,24 +186,32 @@ function background(c='black'){
 			You can edit the woven pattern below to create interconnected celtic-style knots.
 			Click the <strong>Edit</strong> button to show the primary (small) and secondary (larger) grid points. Connect two adjacent secondary points (non-diagonal) to form a knot boundary by clicking on one point and then another neighbouring point. Click on the grey midpoint of a boundary to remove it. Click <strong>Show</strong> to reveal the knot pattern.
 		</div>
-	<hr>	
+		<hr>	
 		<div class='centered'>
-		<div class="btn-group btn-group-md" role="group">	
-			<button id="xs-size" class="gs-btn btn btn-secondary">xs</button>	
-			<button id="sm-size" class="gs-btn btn btn-primary">sm</button>
-			<button id="md-size" class="gs-btn btn btn-secondary">md</button>
-			<button id="lg-size" class="gs-btn btn btn-secondary">lg</button>
-		</div>
+		<form>
+			height: <input type="number" id="height" min="2" max="20" step="1" value="3">
+			width: <input type="number" id="width" min="2" max="20" step="1" value="3">
+			scale: <input type="number" id="scale" min="5" max="100" step="1" value="40">		 
+		</form>
 		</div>
 		<br>
-		<div id='knot' class='framed'></div>
+	</div>
+	<div class='col-sm-1 col-lg-3'></div>
+</div>
+
+<div id='knot' class='framed'></div>
+
+	<div class='row'>
+	<div class='col-sm-1 col-lg-3'></div>
+	<div class='col-sm-10 col-lg-6 main-column'>
 		<br>
 		<div class='centered'>
 		<div class="btn-group btn-group-md" role="group">	
 			<button id="show" class="btn btn-primary">Show</button>
 			<button id="edit" class="btn btn-secondary">Edit</button>
+			<button id="randomize" class="btn btn-secondary">Random</button>	
 			<button id="reset" class="btn btn-secondary">Reset</button>
-		</div>
+		</div>		
 		<br>
 		<br>
 		<div class="btn-group">
@@ -218,8 +252,8 @@ function background(c='black'){
     			<a class="dropdown-item" onclick="background('purple')"href="#">purple</a>
     			<a class="dropdown-item" onclick="background('orangered')"href="#">orangered</a>
   			</div>
-		</div>	
 		</div>
+		</div>	
 		</div>
 		<hr>
 		<div class='centered'>
@@ -230,7 +264,7 @@ function background(c='black'){
 		<br>
 		<br>	
 		</div>
-	<div class='col-sm-1 col-lg-3'></div>
+		<div class='col-sm-1 col-lg-3'></div>
 	</div>
 </div>
 </body>

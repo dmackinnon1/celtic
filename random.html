@@ -66,8 +66,16 @@ $(document).ready(function(){
 		reset();
 	});		
 
-
-	interactive.display = document.getElementById('knot');
+	$("#download").on("click", function(event){
+		let tempElement = document.createElement('a');
+  		tempElement.setAttribute('href', 'data:text/plain;charset=utf-8,' 
+  			+ encodeURIComponent(""+ knot.init().junctions().nodes().lines().build()+""));
+  		tempElement.setAttribute('download', 'image.svg');
+  		tempElement.style.display = 'none';
+  		document.body.appendChild(tempElement);
+		tempElement.click();
+		document.body.removeChild(tempElement);
+	});
 	reset();
 });
 
@@ -79,12 +87,22 @@ let large = [20, 15, width/16];
 let size = small;
 let grid = null;
 let knot = null;
+
 function reset(){
 	grid = new Grid(size[0],size[1]);
 	grid.initialize().borders();
-	knot = new KnotSVG(grid, size[2]).chunkyStyle();	
+	let fg = "white";
+	let bg = "black";
+	if (knot != null){
+		fg = knot.foregroundColor;
+		bg = knot.backgroundColor
+	} 
+	knot = new KnotSVG(grid, size[2]).chunkyStyle();
+	knot.setForeground(fg);
+	knot.setBackground(bg);
 	redraw();
 };
+
 function redraw(){
 	document.getElementById('knot').innerHTML =  knot.init().nodes().junctions().lines().build();	
 }
@@ -97,7 +115,7 @@ function background(c='black'){
 	redraw();
 } 
 function randomize(){
-	grid.randomLines(10);
+	grid.randomLines(20);
 	redraw();
 }
 </script>
@@ -183,8 +201,14 @@ function randomize(){
 		</div>	
 		</div>
 		</div>
+		<hr>
+		<div class='centered'>
+		<div class="btn-group btn-group-md" role="group">	
+			<button id="download" class="gs-btn btn btn-secondary">download</button>	
+			</div>
+		</div>
 		<br>
-		<hr>		
+		<br>			
 	</div>
 	<div class='col-sm-1 col-lg-3'></div>
 	
