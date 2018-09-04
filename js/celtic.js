@@ -48,6 +48,13 @@ class Point{
 		}
 		return false;
 	}
+	isEven(){
+		return this.x%2==0;
+	}
+
+	isOdd(){
+		return !this.isEven();
+	}
 }
 
 /*
@@ -394,43 +401,42 @@ class Grid {
 		let yMin = Math.min(p1.y,p2.y);
 		let yMax = Math.max(p1.y,p2.y);
 
-		for (let i = xMin; i < xMax; i++){
-			
-			if (i%2==0){	
+		//only form a frame if both frames are same mod 2
+		if ((p1.isEven() && p2.isOdd())||(p1.isOdd()&&p2.isEven())){
+			return;
+		}
+		
+		for (let i = xMin; i < xMax; i = i+2){			
 				let node = this.secondaryGrid[i][yMin];
+				if (node == undefined) break;
 				if (node.east() == null || node.eastEast() == null) break;
 				if (node.east().junctions.length!=0) continue;
 				let junction = new Junction(node, node.east(), node.eastEast(), "EW");
 				this.junctions.push(junction);
-			}
 		}
-		for (let i = xMin; i < xMax; i++){
-			if (i%2==0){	
+		for (let i = xMin; i < xMax; i = i+2){
 				let node = this.secondaryGrid[i][yMax];
+				if (node == undefined) break;
 				if (node.east() == null || node.eastEast() == null) break;
 				if (node.east().junctions.length!=0) continue;			
 				let junction = new Junction(node, node.east(), node.eastEast(), "EW");
-				this.junctions.push(junction);
-			}
+				this.junctions.push(junction);	
 		}
-		for (let i = yMin; i < yMax; i++){
-			if (i%2==0){	
+		for (let i = yMin; i < yMax; i = i+2){
 				let node = this.secondaryGrid[xMin][i];
+				if (node == undefined) break;
 				if (node.south() == null || node.southSouth() == null) break;
 				if (node.south().junctions.length!=0) continue;		
 				let junction = new Junction(node, node.south(), node.southSouth(), "NS");
 				this.junctions.push(junction);
-			}
 		}
-		for (let i = yMin; i < yMax ; i++){
-			if (i%2==0){	
-				let node = this.primaryGrid[xMax][i];
+		for (let i = yMin; i < yMax ; i = i+2){
+				let node = this.secondaryGrid[xMax][i];
 				if (node == undefined) break;
 				if (node.south() == null || node.southSouth() == null) break;
 				if (node.south().junctions.length!=0) continue;	
 				let junction = new Junction(node, node.south(), node.southSouth(), "NS");
 				this.junctions.push(junction);
-			}
 		}
 		return this;
 	}
@@ -717,7 +723,11 @@ class EditKnotSVG extends KnotSVG{
 			} else if(this.source.isSouthNeighbor(other)&& other.north().junctions.length == 0){
 				j = new Junction(this.source, other.north(), other, "NS");
 			} else{
-				this.source = other;
+				//this.source = other;
+				this.g.boxFrame(this.source, other);
+				this.source = null;
+				this.g.calc();
+				refreshInteractive();
 			}
 			if (j != null){
 				this.source = null;
