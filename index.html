@@ -101,7 +101,7 @@ let size = small;
 
 function reset(){
 	let grid = new Grid(size[0],size[1]);
-	grid.initialize().borders();
+	grid.initialize().borders(); //borders()
 	let fg = "white";
 	let bg = "black";
 	if (interactive.knot != null){
@@ -125,12 +125,31 @@ function resetButtons(){
 	$("#edit").addClass('btn-secondary');	
 }
 function foreground(c='white'){
-	interactive.knot.setForeground(c);
+	if (interactive.format == 'negative'){
+		interactive.knot.setForeground(c);
+	} else {
+		interactive.knot.setBackground(c);
+	}
 	refreshInteractive();
 }
 function background(c='black'){
-	interactive.knot.setBackground(c);
+	if (interactive.format == 'negative'){
+		interactive.knot.setBackground(c);
+	} else {
+		interactive.knot.setForeground(c);
+	}
 	refreshInteractive();
+}
+//the two types of formats reverse the foreground and background
+function format(f='negative'){
+	if (interactive.format != f){
+		let oldBackground = interactive.knot.backgroundColor;
+		let oldForeground = interactive.knot.foregroundColor;
+		interactive.knot.setForeground(oldBackground);
+		interactive.knot.setBackground(oldForeground);
+		interactive.format = f;
+		refreshInteractive();
+	}
 }
 </script>
 <body>
@@ -174,6 +193,12 @@ function background(c='black'){
 		<div id='knot' class='framed'></div>
 		<br>
 		<div class='centered'>
+		<div class="btn-group btn-group-sm" role="group">	
+			<button id="negative" class="btn btn-secondary" onclick="format('negative')">Style 1</button>
+			<button id="positive" class="btn btn-secondary" onclick="format('positive')">Style 2</button>
+		</div>
+		<br>
+		<br>
 		<div class="btn-group btn-group-md" role="group">	
 			<button id="show" class="btn btn-primary">Show</button>
 			<button id="edit" class="btn btn-secondary">Edit</button>

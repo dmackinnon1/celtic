@@ -104,16 +104,40 @@ function reset(){
 };
 
 function redraw(){
-	document.getElementById('knot').innerHTML =  knot.init().nodes().junctions().lines().build();	
+	if (interactive.format == 'negative'){
+		document.getElementById('knot').innerHTML =  knot.init().nodes().junctions().lines().build();
+	} else {
+		document.getElementById('knot').innerHTML =  knot.init().centerLines().build();
+	}	
 }
+
 function foreground(c='white'){
-	knot.setForeground(c);
+	if (interactive.format == 'negative'){
+		knot.setForeground(c);
+	} else {
+		knot.setBackground(c);
+	}
 	redraw();
 }
 function background(c='black'){
-	knot.setBackground(c);
+	if (interactive.format == 'negative'){
+		knot.setBackground(c);
+	} else {
+		knot.setForeground(c);
+	}
 	redraw();
-} 
+}
+function format(f='negative'){
+	if (interactive.format != f){
+		let oldBackground = knot.backgroundColor;
+		let oldForeground = knot.foregroundColor;
+		knot.setForeground(oldBackground);
+		knot.setBackground(oldForeground);
+		interactive.format = f;
+		redraw();
+	}
+}
+
 function randomize(){
 	grid.randomLines(20);
 	redraw();
@@ -157,6 +181,12 @@ function randomize(){
 		<div class="btn-group btn-group-md" role="group">	
 			<button id="randomize" class="btn btn-primary">Random</button>
 			<button id="reset" class="btn btn-primary">Reset</button>
+		</div>
+		<br>
+		<br>
+		<div class="btn-group btn-group-sm" role="group">	
+			<button id="negative" class="btn btn-secondary" onclick="format('negative')">Style 1</button>
+			<button id="positive" class="btn btn-secondary" onclick="format('positive')">Style 2</button>
 		</div>
 		<br>
 		<br>

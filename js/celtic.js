@@ -78,6 +78,7 @@ class Node extends Point {
 		this.lines = [];
 		this.polyShape = "plain";
 		this.bevel = 1/4;
+		this.centerLines = [];
 	}
 
 	plainPolyShape(){
@@ -295,6 +296,117 @@ class Node extends Point {
 			}
 		}
 	}
+
+	centerLinesCalc(){
+		this.centerLines = [];
+		if (this.x%2==0){						
+			if (this.east() != null && this.east().junctions.length == 0){
+				this.centerLines.push(new Line(new Point(this.x+1, this.y), 
+					new Point(this.x+(1/2), this.y+(1/2))));
+			} else if (this.east() != null && this.east().junctions.length != 0 && this.east().hasNSJunction()){				
+				this.centerLines.push(new Line(new Point(this.x+(1/2), this.y -(1/2)), 
+					new Point(this.x+(1/2), this.y+(1/2))));
+				if(this.south() != null && this.south().junctions.length == 0){
+					this.centerLines.push(new Line(new Point(this.x+(1/2), this.y+(1/2)), 
+						new Point(this.x+(1/4), this.y+(3/4))));
+					}					
+			}
+			if (this.south() != null && this.south().junctions.length == 0){
+				this.centerLines.push(new Line(new Point(this.x, this.y+1), 
+					new Point(this.x-(1/2), this.y +(1/2))));	
+			} else if (this.south() != null && this.south().junctions.length != 0 && this.south().hasEWJunction()){
+				this.centerLines.push(new Line(new Point(this.x +(1/2), this.y+(1/2)), 
+					new Point(this.x-(1/2), this.y +(1/2))));
+				if (this.west() != null && this.west().junctions.length ==0){
+					this.centerLines.push(new Line( new Point(this.x-(1/2), this.y +(1/2)),
+						new Point(this.x -(3/4), this.y+(1/4))));
+				}
+			}
+			if (this.west() != null && this.west().junctions.length == 0){
+				this.centerLines.push(new Line(new Point(this.x-1, this.y), 
+					new Point(this.x-(1/2), this.y - (1/2))));	
+			} else if (this.west() != null && this.west().junctions.length != 0 && this.west().hasNSJunction()) {
+				this.centerLines.push(new Line(new Point(this.x-(1/2), this.y +(1/2)), 
+					new Point(this.x-(1/2), this.y - (1/2))));
+				if (this.north!=null && this.north().junctions.length == 0){
+					this.centerLines.push(new Line(new Point(this.x-(1/2), this.y - (1/2)), 
+						new Point(this.x-(1/4), this.y - (3/4))));				
+				}
+			}
+			if (this.north() != null && this.north().junctions.length == 0) {
+				this.centerLines.push(new Line(new Point(this.x, this.y-1), 
+					new Point(this.x+(1/2), this.y-(1/2))));	
+			} else if (this.north() != null && this.north().junctions.length != 0 && this.north().hasEWJunction()){
+				this.centerLines.push(new Line(new Point(this.x-(1/2), this.y-(1/2)), 
+					new Point(this.x+(1/2), this.y-(1/2))));
+				if (this.east()!=null && this.east().junctions.length==0){
+					this.centerLines.push(new Line(new Point(this.x+(1/2), this.y-(1/2)), 
+						new Point(this.x+(3/4), this.y-(1/4))));
+				}
+			}			
+		} else { 
+			if (this.east() != null && this.east().junctions.length == 0){
+				this.centerLines.push(new Line(new Point(this.x+1, this.y), 
+					new Point(this.x+(1/2), this.y-(1/2))));
+				if (this.north()!=null && this.north().junctions.length == 0){
+					this.centerLines.push(new Line(new Point(this.x+(1/2), this.y -(1/2)), 
+						new Point(this.x+(1/4), this.y-(3/4))));
+				}
+			} else if (this.east() != null && this.east().junctions.length != 0 && this.east().hasNSJunction()){				
+				this.centerLines.push(new Line(new Point(this.x+(1/2), this.y -(1/2)), 
+					new Point(this.x+(1/2), this.y+(1/2))));
+				if (this.north() != null && this.north().junctions.length == 0){
+					this.centerLines.push(new Line(new Point(this.x+(1/2), this.y -(1/2)), 
+						new Point(this.x+(1/4), this.y-(3/4))));					
+				}	
+			}
+			if (this.south() != null && this.south().junctions.length == 0){
+				this.centerLines.push(new Line(new Point(this.x, this.y+1), 
+					new Point(this.x+(1/2), this.y +(1/2))));
+				if (this.east()!= null && this.east().junctions.length == 0){
+					this.centerLines.push(new Line(new Point(this.x+(1/2), this.y +(1/2)), 
+						new Point(this.x+(3/4), this.y +(1/4))));
+				}
+			} else if (this.south() != null && this.south().junctions.length != 0 && this.south().hasEWJunction()){
+				this.centerLines.push(new Line(new Point(this.x +(1/2), this.y+(1/2)), 
+					new Point(this.x-(1/2), this.y +(1/2))));
+				if (this.east() != null && this.east().junctions.length ==0){
+					this.centerLines.push(new Line(new Point(this.x +(1/2), this.y+(1/2)), 
+						new Point(this.x+(3/4), this.y +(1/4))));
+				}
+			}
+			if (this.west() != null && this.west().junctions.length == 0){
+				this.centerLines.push(new Line(new Point(this.x-1, this.y), 
+					new Point(this.x-(1/2), this.y + (1/2))));	
+				if (this.south()!=null && this.south().junctions.length ==0){
+					this.centerLines.push(new Line(new Point(this.x-(1/2), this.y+(1/2)), 
+						new Point(this.x-(1/4), this.y +(3/4))));
+				}
+			} else if (this.west() != null && this.west().junctions.length != 0 && this.west().hasNSJunction()) {
+				this.centerLines.push(new Line(new Point(this.x-(1/2), this.y +(1/2)), 
+					new Point(this.x-(1/2), this.y - (1/2))));
+				if(this.south() !=null && this.south().junctions.length == 0){
+					this.centerLines.push(new Line(new Point(this.x-(1/2), this.y +(1/2)), 
+						new Point(this.x-(1/4), this.y + (3/4))));			
+				}
+			}
+			if (this.north() != null && this.north().junctions.length == 0) {
+				this.centerLines.push(new Line(new Point(this.x, this.y-1), 
+					new Point(this.x-(1/2), this.y-(1/2))));
+				if (this.west()!=null && this.west().junctions.length == 0){
+					this.centerLines.push(new Line(new Point(this.x-(1/2), this.y-(1/2)), 
+						new Point(this.x-(3/4), this.y-(1/4))));				
+				}	
+			} else if (this.north() != null && this.north().junctions.length != 0 && this.north().hasEWJunction()){
+				this.centerLines.push(new Line(new Point(this.x-(1/2), this.y-(1/2)), 
+					new Point(this.x+(1/2), this.y-(1/2))));
+				if (this.west()!= null && this.west().junctions.length ==0){
+					this.centerLines.push(new Line(new Point(this.x-(1/2), this.y-(1/2)), 
+						new Point(this.x-(3/4), this.y-(1/4))));				
+				}
+			}
+		}
+	}
 }
 
 /*
@@ -372,6 +484,7 @@ class Grid {
 		for (let n in this.nodes){
 			this.nodes[n].polyCalc();
 			this.nodes[n].lineCalc();
+			this.nodes[n].centerLinesCalc();
 		}
 	}
 	
@@ -641,6 +754,24 @@ class KnotSVG {
 		}
 		return this;		
 	}
+
+	centerLines(){
+		for (let n in this.g.nodes){
+			let node = this.g.nodes[n];
+			for (let l in node.centerLines){
+				let secLine = node.centerLines[l];		
+				let line = new Bldr("line").att("x1",secLine.source.x*this.scale)
+					.att("y1", secLine.source.y*this.scale)
+					.att("x2", secLine.target.x*this.scale)
+					.att("y2", secLine.target.y*this.scale)
+					.att("stroke-width",this.edge*2.5).att("fill","black").att("stroke", this.backgroundColor)
+					.att("stroke-linecap","round");
+				this.svgBldr.elem(line);
+			}
+		}
+		return this;		
+	}
+	
 	
 	linesAt(x,y){	
 			let node = this.g.nodeAt(x,y);
@@ -743,7 +874,8 @@ class EditKnotSVG extends KnotSVG{
 //functions and singleton to accompany EditableKnotSVG
 let interactive = {};
 interactive.mode = 'show'; // edit or show
-interactive.style = curvy;
+interactive.style = angle;
+interactive.format = 'negative'; // positive | negative
 
 function block(){
 	interactive.knot.blockyStyle();
@@ -795,10 +927,15 @@ function primaryMouseOut(event){
 function refreshInteractive(){
 	if (interactive.mode == 'edit'){
 		interactive.display.innerHTML = 
-			interactive.knot.init().junctions().primaryDots().secondaryDots().build();
+			interactive.knot.init().junctions().primaryDots().secondaryDots().build();			
 	} else {
-		interactive.display.innerHTML = 
-			interactive.knot.init().junctions().nodes().lines().build();
+		if (interactive.format == 'positive'){
+			interactive.display.innerHTML = 
+				interactive.knot.init().centerLines().build();
+		} else {
+			interactive.display.innerHTML = 
+				interactive.knot.init().junctions().nodes().lines().build();
+		}
 	}
 }
 
