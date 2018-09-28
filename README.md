@@ -3,7 +3,9 @@ Generator and editors for Celtic Knot patterns.
 Please see the live example here: https://dmackinnon1.github.io/celtic.
 
 
-## example 1
+## Examples below are obsolete - to be replaces with current examples.
+
+### example 1
 ```{javascript}
 let grid = new Grid(18,10);
 grid.initialize().borders().innerFrame(2).randomLines(20);
@@ -15,7 +17,7 @@ $(document).ready(function(){
 ```
 ![example](https://raw.githubusercontent.com/dmackinnon1/celtic/master/imgs/green2.png)
 
-## example 2
+### example 2
 
 ```{javascript}
 let grid = new Grid(6,5);

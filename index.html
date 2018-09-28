@@ -22,6 +22,7 @@
 <script src="js/bldrs.js"></script>
 <script src="js/celtic_base.js"></script>
 <script src="js/celtic_display.js"></script>
+<script src="js/celtic_editor.js"></script>
 <script>
 $(document).ready(function(){
 	$("#show").on("click", function(event){
@@ -106,71 +107,73 @@ $(document).ready(function(){
 		randomize();
 	});
 
-	interactive.display = document.getElementById('knot');
+	interactive.displayDiv = document.getElementById('knot');
 	reset();
 });
 
 function reset(){
 	let width = parseInt($('#width').val());
 	let height = parseInt($('#height').val());
-	let scale = parseInt($('#scale').val());
 	
-	let grid = new Grid(height,width);
-	grid.initialize().borders();
+	interactive.knot = new Grid(height,width);
+	interactive.knot.initialize().borders();
 	
-	let fg = "white";
-	let bg = "black";
-	if (interactive.knot != null){
-		fg = interactive.knot.foregroundColor;
-		bg = interactive.knot.backgroundColor
-	} 
-	interactive.knot = new EditKnotSVG(grid, scale);
-	interactive.knot.setForeground(fg);
-	interactive.knot.setBackground(bg);
-	interactive.mode='show';
+	interactive.scale = parseInt($('#scale').val());	
+	
+	if (interactive.mode == null){
+		interactive.mode='show';
+	}
+	if (interactive.foreground == null){
+		interactive.foreground = "white";
+	}
+	if (interactive.background == null){
+		interactive.background = "black";
+	}
 	resetButtons();
-	applyStyle();
 	refreshInteractive();
 };
 
 function rescale(){
-	let scale = parseInt($('#scale').val());
-	let newKnot = new EditKnotSVG(interactive.knot.g, scale);
-	newKnot.setForeground(interactive.knot.foregroundColor);
-	newKnot.setBackground(interactive.knot.backgroundColor);
-	interactive.knot = newKnot;
+	interactive.scale = parseInt($('#scale').val());
 	refreshInteractive();
 }
 
 function resetButtons(){
-	$("#show").addClass('btn-primary');
-	$("#show").removeClass('btn-secondary');
-	$("#edit").removeClass('btn-primary');
-	$("#edit").addClass('btn-secondary');	
+	if (interactive.mode != "edit"){
+		$("#show").addClass('btn-primary');
+		$("#show").removeClass('btn-secondary');
+		$("#edit").removeClass('btn-primary');
+		$("#edit").addClass('btn-secondary');
+	} else {
+		$("#edit").addClass('btn-primary');
+		$("#edit").removeClass('btn-secondary');
+		$("#show").removeClass('btn-primary');
+		$("#show").addClass('btn-secondary');		
+	}	
 }
 function foreground(c='white'){
 	if (interactive.format == 'negative'){
-		interactive.knot.setForeground(c);
+		interactive.forground = c;
 	} else {
-		interactive.knot.setBackground(c);
+		interactive.background = c;
 	}
 	refreshInteractive();
 }
 function background(c='black'){
 	if (interactive.format == 'negative'){
-		interactive.knot.setBackground(c);
+		interactive.background = c;
 	} else {
-		interactive.knot.setForeground(c);
+		interactive.foreground = c;
 	}
 	refreshInteractive();
 }
 //the two types of formats reverse the foreground and background
 function format(f='negative'){
 	if (interactive.format != f){
-		let oldBackground = interactive.knot.backgroundColor;
-		let oldForeground = interactive.knot.foregroundColor;
-		interactive.knot.setForeground(oldBackground);
-		interactive.knot.setBackground(oldForeground);
+		let oldBackground = interactive.background;
+		let oldForeground = interactive.foreground;
+		interactive.foreground = oldBackground;
+		interactive.background = oldForeground;
 		interactive.format = f;
 		refreshInteractive();
 	}

@@ -55,6 +55,10 @@ class Point{
 	isOdd(){
 		return !this.isEven();
 	}
+
+	isOnSecondary(){
+		return (this.x%2==0 && this.y%2 ==0)||(this.x%2==1 && this.y%2 ==1);
+	}
 }
 
 /*
@@ -674,3 +678,10 @@ class Grid {
 		return this;
 	}
 }
+
+//randomization utility
+function randomInt(lessThan){
+	let r = Math.floor(Math.random()*lessThan);
+	return r;
+};
+
