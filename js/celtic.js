@@ -77,8 +77,21 @@ class Node extends Point {
 		this.polygon = [];
 		this.lines = [];
 		this.polyShape = "plain";
-		this.bevel = 1/4;
+		this.bevel = 1/6;
 		this.centerLines = [];
+		this.additionals = [];
+		this.smoothed = false;
+		this.joints = [];
+	}
+
+	addAdditional(additional){
+		if (this.smoothed) {
+			this.additionals.push(additional);
+		}
+	}
+
+	smoothedLines(setting = true){
+		this.smoothed = setting;
 	}
 
 	plainPolyShape(){
@@ -197,6 +210,7 @@ class Node extends Point {
 	stylizedPolyCalc(){		
 		this.polygon = []; //reset polygon
 		let sideCount = 0;
+		this.additionals = [];
 		//north
 		if (this.north() != null && !this.north().hasEWJunction()){
 			this.polygon.push(new Point(this.x, this.y-(1/2)));				
@@ -204,6 +218,7 @@ class Node extends Point {
 			sideCount ++;
 			this.polygon.push(new Point(this.x-this.bevel, this.y -this.bevel ));
 			this.polygon.push(new Point(this.x+this.bevel, this.y -this.bevel ));
+			this.addAdditional(new Line(new Point(this.x-1,this.y - 1 +this.bevel/2 ), new Point(this.x+1, this.y - 1 +this.bevel/2)));
 		}
 		//corner
 		if(this.north() != null && this.north().hasNSJunction()
@@ -217,6 +232,7 @@ class Node extends Point {
 			sideCount ++;	
 			this.polygon.push(new Point(this.x+this.bevel, this.y -this.bevel ));
 			this.polygon.push(new Point(this.x+this.bevel, this.y +this.bevel ));
+			this.addAdditional(new Line(new Point(this.x+1-this.bevel/2 ,this.y - 1), new Point(this.x+1-this.bevel/2, this.y + 1)));	
 		}
 		//corner
 		if(this.east() != null && this.east().hasEWJunction()
@@ -229,7 +245,8 @@ class Node extends Point {
 		} else {
 			sideCount ++;
 			this.polygon.push(new Point(this.x+this.bevel, this.y +this.bevel));
-			this.polygon.push(new Point(this.x-this.bevel, this.y +this.bevel));	
+			this.polygon.push(new Point(this.x-this.bevel, this.y +this.bevel));
+			this.addAdditional(new Line(new Point(this.x-1,this.y + 1 - this.bevel/2 ), new Point(this.x+1, this.y + 1 - this.bevel/2)));	
 		}
 		//corner	
 		if(this.south() != null && this.south().hasNSJunction()
@@ -242,7 +259,9 @@ class Node extends Point {
 		} else {
 			sideCount ++;
 			this.polygon.push(new Point(this.x-this.bevel, this.y +this.bevel));
-			this.polygon.push(new Point(this.x-this.bevel, this.y -this.bevel));	
+			this.polygon.push(new Point(this.x-this.bevel, this.y -this.bevel));
+			this.addAdditional(new Line(new Point(this.x-1+this.bevel/2 ,this.y - 1), new Point(this.x-1+this.bevel/2, this.y + 1)));
+			
 		}
 		//corner
 		if(this.west() != null && this.west().hasEWJunction()
@@ -255,7 +274,9 @@ class Node extends Point {
 			this.polygon.push(new Point(this.x-1,this.y+1));
 			this.polygon.push(new Point(this.x+1,this.y+1));
 			this.polygon.push(new Point(this.x+1,this.y-1));		
-		}
+		} 
+
+
 	}
 
 	lineCalc(){
@@ -306,6 +327,8 @@ class Node extends Point {
 			} else if (this.east() != null && this.east().junctions.length != 0 && this.east().hasNSJunction()){				
 				this.centerLines.push(new Line(new Point(this.x+(1/2), this.y -(1/2)), 
 					new Point(this.x+(1/2), this.y+(1/2))));
+				this.joints.push(new Point(this.x+(1/2), this.y -(1/2)));
+				this.joints.push(new Point(this.x+(1/2), this.y+(1/2)));
 				if(this.south() != null && this.south().junctions.length == 0){
 					this.centerLines.push(new Line(new Point(this.x+(1/2), this.y+(1/2)), 
 						new Point(this.x+(1/4), this.y+(3/4))));
@@ -317,6 +340,8 @@ class Node extends Point {
 			} else if (this.south() != null && this.south().junctions.length != 0 && this.south().hasEWJunction()){
 				this.centerLines.push(new Line(new Point(this.x +(1/2), this.y+(1/2)), 
 					new Point(this.x-(1/2), this.y +(1/2))));
+				this.joints.push(new Point(this.x +(1/2), this.y+(1/2)));
+				this.joints.push(new Point(this.x-(1/2), this.y +(1/2)));					
 				if (this.west() != null && this.west().junctions.length ==0){
 					this.centerLines.push(new Line( new Point(this.x-(1/2), this.y +(1/2)),
 						new Point(this.x -(3/4), this.y+(1/4))));
@@ -328,9 +353,11 @@ class Node extends Point {
 			} else if (this.west() != null && this.west().junctions.length != 0 && this.west().hasNSJunction()) {
 				this.centerLines.push(new Line(new Point(this.x-(1/2), this.y +(1/2)), 
 					new Point(this.x-(1/2), this.y - (1/2))));
+				this.joints.push(new Point(this.x-(1/2), this.y +(1/2)));
+				this.joints.push(new Point(this.x-(1/2), this.y - (1/2)));
 				if (this.north!=null && this.north().junctions.length == 0){
 					this.centerLines.push(new Line(new Point(this.x-(1/2), this.y - (1/2)), 
-						new Point(this.x-(1/4), this.y - (3/4))));				
+						new Point(this.x-(1/4), this.y - (3/4))));					
 				}
 			}
 			if (this.north() != null && this.north().junctions.length == 0) {
@@ -339,6 +366,8 @@ class Node extends Point {
 			} else if (this.north() != null && this.north().junctions.length != 0 && this.north().hasEWJunction()){
 				this.centerLines.push(new Line(new Point(this.x-(1/2), this.y-(1/2)), 
 					new Point(this.x+(1/2), this.y-(1/2))));
+				this.joints.push(new Point(this.x-(1/2), this.y -(1/2)));
+				this.joints.push(new Point(this.x+(1/2), this.y - (1/2)));				
 				if (this.east()!=null && this.east().junctions.length==0){
 					this.centerLines.push(new Line(new Point(this.x+(1/2), this.y-(1/2)), 
 						new Point(this.x+(3/4), this.y-(1/4))));
@@ -348,6 +377,7 @@ class Node extends Point {
 			if (this.east() != null && this.east().junctions.length == 0){
 				this.centerLines.push(new Line(new Point(this.x+1, this.y), 
 					new Point(this.x+(1/2), this.y-(1/2))));
+				this.joints.push(new Point(this.x+(1/2), this.y -(1/2)));			
 				if (this.north()!=null && this.north().junctions.length == 0){
 					this.centerLines.push(new Line(new Point(this.x+(1/2), this.y -(1/2)), 
 						new Point(this.x+(1/4), this.y-(3/4))));
@@ -355,6 +385,8 @@ class Node extends Point {
 			} else if (this.east() != null && this.east().junctions.length != 0 && this.east().hasNSJunction()){				
 				this.centerLines.push(new Line(new Point(this.x+(1/2), this.y -(1/2)), 
 					new Point(this.x+(1/2), this.y+(1/2))));
+				this.joints.push(new Point(this.x+(1/2), this.y -(1/2)));
+				this.joints.push(new Point(this.x+(1/2), this.y +(1/2)));							
 				if (this.north() != null && this.north().junctions.length == 0){
 					this.centerLines.push(new Line(new Point(this.x+(1/2), this.y -(1/2)), 
 						new Point(this.x+(1/4), this.y-(3/4))));					
@@ -363,6 +395,7 @@ class Node extends Point {
 			if (this.south() != null && this.south().junctions.length == 0){
 				this.centerLines.push(new Line(new Point(this.x, this.y+1), 
 					new Point(this.x+(1/2), this.y +(1/2))));
+				this.joints.push(new Point(this.x+(1/2), this.y +(1/2)));				
 				if (this.east()!= null && this.east().junctions.length == 0){
 					this.centerLines.push(new Line(new Point(this.x+(1/2), this.y +(1/2)), 
 						new Point(this.x+(3/4), this.y +(1/4))));
@@ -370,6 +403,8 @@ class Node extends Point {
 			} else if (this.south() != null && this.south().junctions.length != 0 && this.south().hasEWJunction()){
 				this.centerLines.push(new Line(new Point(this.x +(1/2), this.y+(1/2)), 
 					new Point(this.x-(1/2), this.y +(1/2))));
+				this.joints.push(new Point(this.x+(1/2), this.y +(1/2)));
+				this.joints.push(new Point(this.x-(1/2), this.y +(1/2)));
 				if (this.east() != null && this.east().junctions.length ==0){
 					this.centerLines.push(new Line(new Point(this.x +(1/2), this.y+(1/2)), 
 						new Point(this.x+(3/4), this.y +(1/4))));
@@ -378,6 +413,7 @@ class Node extends Point {
 			if (this.west() != null && this.west().junctions.length == 0){
 				this.centerLines.push(new Line(new Point(this.x-1, this.y), 
 					new Point(this.x-(1/2), this.y + (1/2))));	
+				this.joints.push(new Point(this.x-(1/2), this.y +(1/2)));		
 				if (this.south()!=null && this.south().junctions.length ==0){
 					this.centerLines.push(new Line(new Point(this.x-(1/2), this.y+(1/2)), 
 						new Point(this.x-(1/4), this.y +(3/4))));
@@ -385,14 +421,17 @@ class Node extends Point {
 			} else if (this.west() != null && this.west().junctions.length != 0 && this.west().hasNSJunction()) {
 				this.centerLines.push(new Line(new Point(this.x-(1/2), this.y +(1/2)), 
 					new Point(this.x-(1/2), this.y - (1/2))));
+				this.joints.push(new Point(this.x-(1/2), this.y+(1/2)));
+				this.joints.push(new Point(this.x-(1/2), this.y-(1/2)));
 				if(this.south() !=null && this.south().junctions.length == 0){
 					this.centerLines.push(new Line(new Point(this.x-(1/2), this.y +(1/2)), 
-						new Point(this.x-(1/4), this.y + (3/4))));			
+						new Point(this.x-(1/4), this.y + (3/4))));							
 				}
 			}
 			if (this.north() != null && this.north().junctions.length == 0) {
 				this.centerLines.push(new Line(new Point(this.x, this.y-1), 
 					new Point(this.x-(1/2), this.y-(1/2))));
+				this.joints.push(new Point(this.x-(1/2), this.y -(1/2)));			
 				if (this.west()!=null && this.west().junctions.length == 0){
 					this.centerLines.push(new Line(new Point(this.x-(1/2), this.y-(1/2)), 
 						new Point(this.x-(3/4), this.y-(1/4))));				
@@ -400,9 +439,11 @@ class Node extends Point {
 			} else if (this.north() != null && this.north().junctions.length != 0 && this.north().hasEWJunction()){
 				this.centerLines.push(new Line(new Point(this.x-(1/2), this.y-(1/2)), 
 					new Point(this.x+(1/2), this.y-(1/2))));
+				this.joints.push(new Point(this.x-(1/2), this.y -(1/2)));
+				this.joints.push(new Point(this.x+(1/2), this.y -(1/2)));				
 				if (this.west()!= null && this.west().junctions.length ==0){
 					this.centerLines.push(new Line(new Point(this.x-(1/2), this.y-(1/2)), 
-						new Point(this.x-(3/4), this.y-(1/4))));				
+						new Point(this.x-(3/4), this.y-(1/4))));								
 				}
 			}
 		}
@@ -451,6 +492,13 @@ class Grid {
 			this.nodes[n].stylizedPolyShape();
 		}
 		return this;
+	}
+
+	smoothedLines(){
+		for (let n in this.nodes){
+			this.nodes[n].smoothedLines();
+		}
+		return this;	
 	}
 
 	randomPolyShape(){
@@ -637,7 +685,7 @@ class KnotSVG {
 	constructor(g, scale){
 		this.g = g;
 		this.scale = scale;
-		this.edge = scale/8;
+		this.edge = scale/8; //scale/8
 		this.svgBldr = null;
 		this.backgroundColor = "black";
 		this.foregroundColor = "white";
@@ -672,14 +720,25 @@ class KnotSVG {
 		return this;
 	}
 
+	smoothedLines(){
+		this.g.smoothedLines();
+		this.g.calc();
+		return this;
+	}
+
+	style2Gaps(){
+		this.edge = this.scale/5; //8
+		return this;
+	}
+
 	wideGaps(){
-		this.edge = this.scale/8;
+		this.edge = this.scale/8; //8
 		return this;
 	}
 
 	setBackground(color){
 		this.backgroundColor = color;
-		return this;
+		return this; 
 	}
 
 	setForeground(color){
@@ -747,9 +806,19 @@ class KnotSVG {
 					.att("y1", secLine.source.y*this.scale)
 					.att("x2", secLine.target.x*this.scale)
 					.att("y2", secLine.target.y*this.scale)
-					.att("stroke-width",this.edge).att("fill","black").att("stroke", this.backgroundColor)
+					.att("stroke-width",this.edge*1.1).att("stroke", this.backgroundColor)
 					.att("stroke-linecap","round");
 				this.svgBldr.elem(line);
+			}
+			for (let l in node.additionals){
+				let secLine = node.additionals[l];		
+				let line = new Bldr("line").att("x1",secLine.source.x*this.scale)
+					.att("y1", secLine.source.y*this.scale)
+					.att("x2", secLine.target.x*this.scale)
+					.att("y2", secLine.target.y*this.scale)
+					.att("stroke-width",this.edge*3).att("stroke", this.backgroundColor)
+					.att("stroke-linecap","round");
+				this.svgBldr.elem(line);	
 			}
 		}
 		return this;		
@@ -764,9 +833,18 @@ class KnotSVG {
 					.att("y1", secLine.source.y*this.scale)
 					.att("x2", secLine.target.x*this.scale)
 					.att("y2", secLine.target.y*this.scale)
-					.att("stroke-width",this.edge*2.5).att("fill","black").att("stroke", this.backgroundColor)
-					.att("stroke-linecap","round");
+					.att("stroke-width",this.edge*2.5).att("stroke", this.backgroundColor)
+					.att("stroke-linecap","butt");
 				this.svgBldr.elem(line);
+			}
+			for (let j in node.joints){
+				let joint = node.joints[j];		
+				let circle = new Bldr("circle").att("cx",joint.x*this.scale)
+					.att("cy", joint.y*this.scale)
+					.att("r", this.edge)
+					.att("fill", this.backgroundColor)
+					.att("stroke-width",this.edge/3).att("stroke", this.backgroundColor);
+				this.svgBldr.elem(circle);
 			}
 		}
 		return this;		
@@ -931,10 +1009,11 @@ function refreshInteractive(){
 	} else {
 		if (interactive.format == 'positive'){
 			interactive.display.innerHTML = 
-				interactive.knot.init().centerLines().build();
+				interactive.knot.init().style2Gaps().centerLines().build();
 		} else {
 			interactive.display.innerHTML = 
 				interactive.knot.init().junctions().nodes().lines().build();
+				//interactive.knot.init().smoothedLines().junctions().nodes().lines().build();
 		}
 	}
 }
