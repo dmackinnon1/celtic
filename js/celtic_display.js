@@ -2,22 +2,24 @@
 
 /*
 * KnotDisplay classes provide different ways of displaying 
-* the knot defined by a Grid object.
+* the knot defined by a Grid object. They use DisplayData objects
+* to store display information about the grid before generating
+* svg representations.
 * 
 * KnotDisplay - just shows the raw primary and secondary grid
 * and any junctions between secondary grid points.
 *
-* BasicKnotDisplay - draws a primitive knot pattern using the
+* BasicKnotDisplay & DisplayData - draws a primitive knot pattern using the
 * 'negative space' algorithm, which makes secondary points into
 * gaps between the knot bands and draws gaps where the bands
 * overlap.
 *
-* BeveledKnotDisplay - follows the 'negative space' algorithm
-* but truncates the polygons drawn at secondary points so that
-* the knot bands appear to bend.
+* BeveledKnotDisplay & BeveledDisplayData - follows the 
+* 'negative space' algorithm but truncates the polygons drawn at 
+* secondary points so that the knot bands appear to bend.
 *
-* PositiveKnotDisplay - folllows the 'positive space' algorithm,
-* drawing lines and joints between the secondary points.
+* PositiveKnotDisplay PositiveDisplayData- folllows the 'positive space' 
+* algorithm, drawing lines and circles between the secondary points.
 *
 * RibbonKnotDisplay - adds multiple layers of thhe 'positive space'
 * algorithm.
@@ -50,7 +52,7 @@ class KnotDisplay {
 	}
 
 	buildStructure(){
-		this.g.calc();
+		//no calculation required
 	}
 
 	buildSVG(){
@@ -93,11 +95,80 @@ class KnotDisplay {
 	}
 }
 
+class DisplayData {
+	constructor(){
+		this.lines = [];
+		this.polygon = [];
+	}
+
+	polyCalc(node){
+		this.polygon = []; //reset polygon
+		this.polygon.push(new Point(node.x+(1/2),node.y));
+		this.polygon.push(new Point(node.x, node.y+(1/2)));
+		this.polygon.push(new Point(node.x-(1/2), node.y));	
+		this.polygon.push(new Point(node.x, node.y-(1/2)));
+	}
+
+	lineCalc(node){
+		this.lines = [];
+		if (node.x%2==0){			
+			if (node.east() != null && node.east().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x+(1/2), node.y), 
+					new Point(node.x+1, node.y-(1/2))));
+			}
+			if (node.south() != null && node.south().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x, node.y+(1/2)), 
+					new Point(node.x+(1/2), node.y +1)));	
+			}
+			if (node.west() != null && node.west().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x-(1/2), node.y), 
+					new Point(node.x-1, node.y +(1/2))));	
+			}
+			if (node.north() != null && node.north().junctions.length == 0) {
+				this.lines.push(new Line(new Point(node.x, node.y-(1/2)), 
+					new Point(node.x-(1/2), node.y-1)));	
+			}
+		} else {
+			if (node.east() != null && node.east().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x+(1/2), node.y), 
+					new Point(node.x+1, node.y +(1/2))));
+			}
+			if (node.south() != null && node.south().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x, node.y+(1/2)), 
+					new Point(node.x-(1/2), node.y +1)));
+			}
+			if (node.west() !== null && node.west().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x-(1/2), node.y), 
+					new Point(node.x-1, node.y -(1/2))));	
+			}
+			if (node.north() != null && node.north().junctions.length == 0) {
+				this.lines.push(new Line(new Point(node.x, node.y-(1/2)), 
+					new Point(node.x+(1/2), node.y-1)));	
+			}
+		}
+	}
+}
+
 class BasicKnotDisplay extends KnotDisplay {
 	constructor(g, scale,foreground = "white", background = "black"){
 		super(g, scale, foreground, background);
+		this.displayData = [];
 	}
 
+	newDisplayData(){
+		return new DisplayData();
+	}
+
+	buildStructure(){
+		for(let n in this.g.nodes){
+			let node = this.g.nodes[n];
+			let d = this.newDisplayData();
+			d.polyCalc(node);
+			d.lineCalc(node);
+			this.displayData.push(d);	
+		}
+	}
+	
 	buildSVG(){
 		this.nodes();
 		this.junctions();
@@ -105,8 +176,8 @@ class BasicKnotDisplay extends KnotDisplay {
 	}
 	
 	nodes(){
-		for (let n in this.g.nodes){
-			let node = this.g.nodes[n];
+		for (let n in this.displayData){
+			let node = this.displayData[n];
 			let plist = "";
 			for (let p in node.polygon){
 				let point = node.polygon[p];
@@ -132,8 +203,8 @@ class BasicKnotDisplay extends KnotDisplay {
 	}
 
 	lines(){
-		for (let n in this.g.nodes){
-			let node = this.g.nodes[n];
+		for (let n in this.displayData){
+			let node = this.displayData[n];
 			for (let l in node.lines){
 				let secLine = node.lines[l];		
 				let line = new Bldr("line").att("x1",secLine.source.x*this.scale)
@@ -149,27 +220,245 @@ class BasicKnotDisplay extends KnotDisplay {
 	}	
 }
 
+class BeveledDisplayData extends DisplayData {
+
+	constructor(){
+		super();
+		this.bevel = 1/4;
+	}
+
+	polyCalc(node){		
+		this.polygon = []; //reset polygon
+		let sideCount = 0;
+		//north
+		if (node.north() != null && !node.north().hasEWJunction()){
+			this.polygon.push(new Point(node.x, node.y - (1/2)));				
+		} else {
+			sideCount ++;
+			this.polygon.push(new Point(node.x - this.bevel, node.y - this.bevel ));
+			this.polygon.push(new Point(node.x + this.bevel, node.y - this.bevel ));
+		}
+		//corner
+		if(node.north() != null && node.north().hasNSJunction()
+			&& node.east() != null && node.east().hasEWJunction()){
+			this.polygon.push(new Point(node.x, node.y));
+		}
+		//east
+		if (node.east() != null && !node.east().hasNSJunction()){
+			this.polygon.push(new Point(node.x + (1/2), node.y));
+		} else {
+			sideCount ++;	
+			this.polygon.push(new Point(node.x + this.bevel, node.y - this.bevel ));
+			this.polygon.push(new Point(node.x + this.bevel, node.y + this.bevel ));
+		}
+		//corner
+		if(node.east() != null && node.east().hasEWJunction()
+			&& node.south() != null && node.south().hasNSJunction()){
+			this.polygon.push(new Point(node.x, node.y));
+		}
+		//south
+		if (node.south() != null && !node.south().hasEWJunction()){
+			this.polygon.push(new Point(node.x, node.y+(1/2)));
+		} else {
+			sideCount ++;
+			this.polygon.push(new Point(node.x + this.bevel, node.y + this.bevel));
+			this.polygon.push(new Point(node.x - this.bevel, node.y + this.bevel));
+		}
+		//corner	
+		if(node.south() != null && node.south().hasNSJunction()
+			&& node.west() != null && node.west().hasEWJunction()){
+			this.polygon.push(new Point(node.x, node.y));
+		}
+		//west
+		if (node.west() != null && !node.west().hasNSJunction()){
+			this.polygon.push(new Point(node.x - (1/2), node.y));
+		} else {
+			sideCount ++;
+			this.polygon.push(new Point(node.x - this.bevel, node.y + this.bevel));
+			this.polygon.push(new Point(node.x - this.bevel, node.y - this.bevel));			
+		}
+		//corner
+		if(node.west() != null && node.west().hasEWJunction()
+			&& node.north() != null && node.north().hasNSJunction()){
+			this.polygon.push(new Point(node.x, node.y));
+		}		
+		if (sideCount == 4){
+			this.polygon = [];
+			this.polygon.push(new Point(node.x-1,node.y-1));
+			this.polygon.push(new Point(node.x-1,node.y+1));
+			this.polygon.push(new Point(node.x+1,node.y+1));
+			this.polygon.push(new Point(node.x+1,node.y-1));		
+		} 
+	}
+
+
+}
+
 class BeveledKnotDisplay extends BasicKnotDisplay {
 
-	buildStructure(){
-		this.g.standardBevel();
-		this.g.stylizedPolyShape();
-		this.g.calc();
+	newDisplayData(){
+		return new BeveledDisplayData();
 	}
 }
 	
+class PositiveDisplayData extends DisplayData {
+	constructor(){
+		super();
+		this.circles = [];
+	}
+
+	polyCalc(node){
+		//do nothing
+	}
+
+	lineCalc(node){
+		this.lines = [];
+		if (node.x%2==0){						
+			if (node.east() != null && node.east().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x+1, node.y), 
+					new Point(node.x+(1/2), node.y+(1/2))));
+			} else if (node.east() != null && node.east().junctions.length != 0 && node.east().hasNSJunction()){				
+				this.lines.push(new Line(new Point(node.x+(1/2), node.y -(1/2)), 
+					new Point(node.x+(1/2), node.y+(1/2))));
+				this.circles.push(new Point(node.x+(1/2), node.y -(1/2)));
+				this.circles.push(new Point(node.x+(1/2), node.y+(1/2)));
+				if(node.south() != null && node.south().junctions.length == 0){
+					this.lines.push(new Line(new Point(node.x+(1/2), node.y+(1/2)), 
+						new Point(node.x+(1/4), node.y+(3/4))));
+					}					
+			}
+			if (node.south() != null && node.south().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x, node.y+1), 
+					new Point(node.x-(1/2), node.y +(1/2))));	
+			} else if (node.south() != null && node.south().junctions.length != 0 && node.south().hasEWJunction()){
+				this.lines.push(new Line(new Point(node.x +(1/2), node.y+(1/2)), 
+					new Point(node.x-(1/2), node.y +(1/2))));
+				this.circles.push(new Point(node.x +(1/2), node.y+(1/2)));
+				this.circles.push(new Point(node.x-(1/2), node.y +(1/2)));					
+				if (node.west() != null && node.west().junctions.length ==0){
+					this.lines.push(new Line( new Point(node.x-(1/2), node.y +(1/2)),
+						new Point(node.x -(3/4), node.y+(1/4))));
+				}
+			}
+			if (node.west() != null && node.west().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x-1, node.y), 
+					new Point(node.x-(1/2), node.y - (1/2))));	
+			} else if (node.west() != null && node.west().junctions.length != 0 && node.west().hasNSJunction()) {
+				this.lines.push(new Line(new Point(node.x-(1/2), node.y +(1/2)), 
+					new Point(node.x-(1/2), node.y - (1/2))));
+				this.circles.push(new Point(node.x-(1/2), node.y +(1/2)));
+				this.circles.push(new Point(node.x-(1/2), node.y - (1/2)));
+				if (node.north!=null && node.north().junctions.length == 0){
+					this.lines.push(new Line(new Point(node.x-(1/2), node.y - (1/2)), 
+						new Point(node.x-(1/4), node.y - (3/4))));					
+				}
+			}
+			if (node.north() != null && node.north().junctions.length == 0) {
+				this.lines.push(new Line(new Point(node.x, node.y-1), 
+					new Point(node.x+(1/2), node.y-(1/2))));	
+			} else if (node.north() != null && node.north().junctions.length != 0 && node.north().hasEWJunction()){
+				this.lines.push(new Line(new Point(node.x-(1/2), node.y-(1/2)), 
+					new Point(node.x+(1/2), node.y-(1/2))));
+				this.circles.push(new Point(node.x-(1/2), node.y -(1/2)));
+				this.circles.push(new Point(node.x+(1/2), node.y - (1/2)));				
+				if (node.east()!=null && node.east().junctions.length==0){
+					this.lines.push(new Line(new Point(node.x+(1/2), node.y-(1/2)), 
+						new Point(node.x+(3/4), node.y-(1/4))));
+				}
+			}			
+		} else { 
+			if (node.east() != null && node.east().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x+1, node.y), 
+					new Point(node.x+(1/2), node.y-(1/2))));
+				this.circles.push(new Point(node.x+(1/2), node.y -(1/2)));			
+				if (node.north()!=null && node.north().junctions.length == 0){
+					this.lines.push(new Line(new Point(node.x+(1/2), node.y -(1/2)), 
+						new Point(node.x+(1/4), node.y-(3/4))));
+				}
+			} else if (node.east() != null && node.east().junctions.length != 0 && node.east().hasNSJunction()){				
+				this.lines.push(new Line(new Point(node.x+(1/2), node.y -(1/2)), 
+					new Point(node.x+(1/2), node.y+(1/2))));
+				this.circles.push(new Point(node.x+(1/2), node.y -(1/2)));
+				this.circles.push(new Point(node.x+(1/2), node.y +(1/2)));							
+				if (node.north() != null && node.north().junctions.length == 0){
+					this.lines.push(new Line(new Point(node.x+(1/2), node.y -(1/2)), 
+						new Point(node.x+(1/4), node.y-(3/4))));					
+				}	
+			}
+			if (node.south() != null && node.south().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x, node.y+1), 
+					new Point(node.x+(1/2), node.y +(1/2))));
+				this.circles.push(new Point(node.x+(1/2), node.y +(1/2)));				
+				if (node.east()!= null && node.east().junctions.length == 0){
+					this.lines.push(new Line(new Point(node.x+(1/2), node.y +(1/2)), 
+						new Point(node.x+(3/4), node.y +(1/4))));
+				}
+			} else if (node.south() != null && node.south().junctions.length != 0 && node.south().hasEWJunction()){
+				this.lines.push(new Line(new Point(node.x +(1/2), node.y+(1/2)), 
+					new Point(node.x-(1/2), node.y +(1/2))));
+				this.circles.push(new Point(node.x+(1/2), node.y +(1/2)));
+				this.circles.push(new Point(node.x-(1/2), node.y +(1/2)));
+				if (node.east() != null && node.east().junctions.length ==0){
+					this.lines.push(new Line(new Point(node.x +(1/2), node.y+(1/2)), 
+						new Point(node.x+(3/4), node.y +(1/4))));
+				}
+			}
+			if (node.west() != null && node.west().junctions.length == 0){
+				this.lines.push(new Line(new Point(node.x-1, node.y), 
+					new Point(node.x-(1/2), node.y + (1/2))));	
+				this.circles.push(new Point(node.x-(1/2), node.y +(1/2)));		
+				if (node.south()!=null && node.south().junctions.length ==0){
+					this.lines.push(new Line(new Point(node.x-(1/2), node.y+(1/2)), 
+						new Point(node.x-(1/4), node.y +(3/4))));
+				}
+			} else if (node.west() != null && node.west().junctions.length != 0 && node.west().hasNSJunction()) {
+				this.lines.push(new Line(new Point(node.x-(1/2), node.y +(1/2)), 
+					new Point(node.x-(1/2), node.y - (1/2))));
+				this.circles.push(new Point(node.x-(1/2), node.y+(1/2)));
+				this.circles.push(new Point(node.x-(1/2), node.y-(1/2)));
+				if(node.south() !=null && node.south().junctions.length == 0){
+					this.lines.push(new Line(new Point(node.x-(1/2), node.y +(1/2)), 
+						new Point(node.x-(1/4), node.y + (3/4))));							
+				}
+			}
+			if (node.north() != null && node.north().junctions.length == 0) {
+				this.lines.push(new Line(new Point(node.x, node.y-1), 
+					new Point(node.x-(1/2), node.y-(1/2))));
+				this.circles.push(new Point(node.x-(1/2), node.y -(1/2)));			
+				if (node.west()!=null && node.west().junctions.length == 0){
+					this.lines.push(new Line(new Point(node.x-(1/2), node.y-(1/2)), 
+						new Point(node.x-(3/4), node.y-(1/4))));				
+				}	
+			} else if (node.north() != null && node.north().junctions.length != 0 && node.north().hasEWJunction()){
+				this.lines.push(new Line(new Point(node.x-(1/2), node.y-(1/2)), 
+					new Point(node.x+(1/2), node.y-(1/2))));
+				this.circles.push(new Point(node.x-(1/2), node.y -(1/2)));
+				this.circles.push(new Point(node.x+(1/2), node.y -(1/2)));				
+				if (node.west()!= null && node.west().junctions.length ==0){
+					this.lines.push(new Line(new Point(node.x-(1/2), node.y-(1/2)), 
+						new Point(node.x-(3/4), node.y-(1/4))));								
+				}
+			}
+		}
+	}
+}
+
 class PositiveKnotDisplay extends BasicKnotDisplay {
 
 	buildSVG(){
 		this.edge = this.scale/2;
-		this.centerLines();
+		this.lines();
 	}
 
-	centerLines(){
-		for (let n in this.g.nodes){
-			let node = this.g.nodes[n];
-			for (let l in node.centerLines){
-				let secLine = node.centerLines[l];		
+	newDisplayData(){
+		return new PositiveDisplayData();
+	}
+
+	lines(){
+		for (let n in this.displayData){
+			let node = this.displayData[n];
+			for (let l in node.lines){
+				let secLine = node.lines[l];		
 				let line = new Bldr("line").att("x1",secLine.source.x*this.scale)
 					.att("y1", secLine.source.y*this.scale)
 					.att("x2", secLine.target.x*this.scale)
@@ -178,8 +467,8 @@ class PositiveKnotDisplay extends BasicKnotDisplay {
 					.att("stroke-linecap","butt");
 				this.svgBldr.elem(line);
 			}
-			for (let j in node.joints){
-				let joint = node.joints[j];		
+			for (let j in node.circles){
+				let joint = node.circles[j];		
 				let circle = new Bldr("circle").att("cx",joint.x*this.scale)
 					.att("cy", joint.y*this.scale)
 					.att("r", (this.edge/2)*(0.95))
@@ -196,16 +485,15 @@ class RibbonKnotDisplay extends PositiveKnotDisplay {
 
 	buildSVG(){
 		super.buildSVG();
-		//this.stripeLines(this.edge*(2/3), this.foregroundColor);
 		this.stripeLines(this.edge/3, this.foregroundColor);
 
 	}
 
 	stripeLines(width, color){
-		for (let n in this.g.nodes){
-			let node = this.g.nodes[n];
-			for (let l in node.centerLines){
-				let secLine = node.centerLines[l];		
+		for (let n in this.displayData){
+			let node = this.displayData[n];
+			for (let l in node.lines){
+				let secLine = node.lines[l];		
 				let line = new Bldr("line").att("x1",secLine.source.x*this.scale)
 					.att("y1", secLine.source.y*this.scale)
 					.att("x2", secLine.target.x*this.scale)
@@ -214,8 +502,8 @@ class RibbonKnotDisplay extends PositiveKnotDisplay {
 					.att("stroke-linecap","butt");
 				this.svgBldr.elem(line);
 			}
-			for (let j in node.joints){
-				let joint = node.joints[j];		
+			for (let j in node.circles){
+				let joint = node.circles[j];		
 				let circle = new Bldr("circle").att("cx",joint.x*this.scale)
 					.att("cy", joint.y*this.scale)
 					.att("r", width/2)

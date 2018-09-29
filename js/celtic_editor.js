@@ -75,7 +75,6 @@ class EditDisplay extends KnotDisplay {
 			if (j != null){
 				this.source = null;
 				this.g.junctions.push(j);
-				this.g.calc();
 				refreshInteractive();
 			}
 		}
