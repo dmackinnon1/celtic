@@ -16,10 +16,6 @@
 * but truncates the polygons drawn at secondary points so that
 * the knot bands appear to bend.
 *
-* SmoothedBeveledKnotDisplay - another 'negative space' display
-* that attempts to smooth over some of the bumpy parts in the
-* BeceledKnotDisplay - experimental, may be removed later. 
-*
 * PositiveKnotDisplay - folllows the 'positive space' algorithm,
 * drawing lines and joints between the secondary points.
 *
@@ -58,8 +54,8 @@ class KnotDisplay {
 	}
 
 	buildSVG(){
-		this.secondaryGrid();
 		this.junctions();
+		this.secondaryGrid();
 		this.primaryGrid();
 
 	}
@@ -186,7 +182,7 @@ class PositiveKnotDisplay extends BasicKnotDisplay {
 				let joint = node.joints[j];		
 				let circle = new Bldr("circle").att("cx",joint.x*this.scale)
 					.att("cy", joint.y*this.scale)
-					.att("r", this.edge/2)
+					.att("r", (this.edge/2)*(0.95))
 					.att("fill", this.backgroundColor);
 					//.att("stroke-width",this.edge/3).att("stroke", this.backgroundColor);
 				this.svgBldr.elem(circle);
@@ -200,8 +196,8 @@ class RibbonKnotDisplay extends PositiveKnotDisplay {
 
 	buildSVG(){
 		super.buildSVG();
-		this.stripeLines(this.edge*(2/3), this.foregroundColor);
-		this.stripeLines(this.edge/3, this.backgroundColor);
+		//this.stripeLines(this.edge*(2/3), this.foregroundColor);
+		this.stripeLines(this.edge/3, this.foregroundColor);
 
 	}
 
@@ -230,4 +226,3 @@ class RibbonKnotDisplay extends PositiveKnotDisplay {
 		return this;		
 	}
 }
-
