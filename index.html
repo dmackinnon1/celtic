@@ -44,49 +44,14 @@ $(document).ready(function(){
 	$("#download").on("click", function(event){
 		let tempElement = document.createElement('a');
   		tempElement.setAttribute('href', 'data:text/plain;charset=utf-8,' 
-  			+ encodeURIComponent(""+ interactive.knot.init().junctions().nodes().lines().build()+""));
+  			+ encodeURIComponent(""+ interactive.displayObject.init().build()+""));
   		tempElement.setAttribute('download', 'image.svg');
   		tempElement.style.display = 'none';
   		document.body.appendChild(tempElement);
 		tempElement.click();
 		document.body.removeChild(tempElement);
 	});
-	
-	$("#xs-size").on("click", function(event){
-		$(".gs-btn").removeClass('btn-primary');
-		$(".gs-btn").addClass('btn-secondary');	
-		$("#xs-size").addClass('btn-primary');
-		$("#xs-size").removeClass('btn-secondary');
-		size = xsmall;
-		reset();
-	});	
-	
-	$("#sm-size").on("click", function(event){
-		$(".gs-btn").removeClass('btn-primary');
-		$(".gs-btn").addClass('btn-secondary');	
-		$("#sm-size").addClass('btn-primary');
-		$("#sm-size").removeClass('btn-secondary');
-		size = small;
-		reset();
-	});	
-	
-	$("#md-size").on("click", function(event){
-		$(".gs-btn").removeClass('btn-primary');
-		$(".gs-btn").addClass('btn-secondary');		
-		$("#md-size").addClass('btn-primary');
-		$("#md-size").removeClass('btn-secondary');
-		size = medium;
-		reset();
-	});	
-	$("#lg-size").on("click", function(event){
-		$(".gs-btn").removeClass('btn-primary');
-		$(".gs-btn").addClass('btn-secondary');	
-		$("#lg-size").addClass('btn-primary');
-		$("#lg-size").removeClass('btn-secondary');
-		size = large;
-		reset();
-	});	
-	
+		
 	$("#reset").on("click", function(event){
 		reset();
 	});		
@@ -150,6 +115,17 @@ function resetButtons(){
 		$("#show").removeClass('btn-primary');
 		$("#show").addClass('btn-secondary');		
 	}	
+	if (interactive.format == 'negative'){
+		$("#negative").addClass('btn-primary');
+		$("#negative").removeClass('btn-secondary');
+		$("#positive").removeClass('btn-primary');
+		$("#positive").addClass('btn-secondary');
+	} else {
+		$("#positive").addClass('btn-primary');
+		$("#positive").removeClass('btn-secondary');
+		$("#negative").removeClass('btn-primary');
+		$("#negative").addClass('btn-secondary');		
+	}
 }
 function foreground(c='white'){
 	if (interactive.format == 'negative'){
@@ -176,6 +152,7 @@ function format(f='negative'){
 		interactive.background = oldForeground;
 		interactive.format = f;
 		refreshInteractive();
+		resetButtons();
 	}
 }
 
@@ -288,7 +265,7 @@ function randomize(){
 		<hr>
 		<div class='centered'>
 		<div class="btn-group btn-group-md" role="group">	
-			<button id="download" class="gs-btn btn btn-secondary">download</button>	
+			<button id="download" class="btn btn-secondary">download</button>	
 			</div>
 		</div>
 		<br>

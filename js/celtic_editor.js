@@ -125,22 +125,20 @@ function primaryMouseOut(event){
 
 
 function refreshInteractive(){
+	refreshInteractiveDisplayObject();
+	interactive.displayDiv.innerHTML = interactive.displayObject.init().build();			
+}
+function refreshInteractiveDisplayObject(){
 	if (interactive.mode == 'edit'){		
 		interactive.displayObject = new EditDisplay(interactive.knot, interactive.scale);
-		interactive.displayDiv.innerHTML = interactive.displayObject.init().build();			
 	} else {
 		if (interactive.format == 'positive'){
 			interactive.displayObject = 
 				new RibbonKnotDisplay(interactive.knot, interactive.scale, 
 					interactive.foreground, interactive.background);
-			interactive.displayDiv.innerHTML = 
-				interactive.displayObject.init().build();
 		} else {
 			interactive.displayObject = new BeveledKnotDisplay(interactive.knot, interactive.scale,
 				interactive.foreground, interactive.background);		
-			interactive.displayDiv.innerHTML = 
-				interactive.displayObject.init().build();
-				//interactive.knot.init().smoothedLines().junctions().nodes().lines().build();
 		}
 	}
 }
