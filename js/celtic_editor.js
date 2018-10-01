@@ -69,7 +69,6 @@ class EditDisplay extends KnotDisplay {
 				//this.source = other;
 				this.g.boxFrame(this.source, other);
 				this.source = null;
-				this.g.calc();
 				refreshInteractive();
 			}
 			if (j != null){
@@ -128,6 +127,7 @@ function refreshInteractive(){
 	refreshInteractiveDisplayObject();
 	interactive.displayDiv.innerHTML = interactive.displayObject.init().build();			
 }
+
 function refreshInteractiveDisplayObject(){
 	if (interactive.mode == 'edit'){		
 		interactive.displayObject = new EditDisplay(interactive.knot, interactive.scale);
