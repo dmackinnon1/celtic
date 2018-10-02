@@ -61,15 +61,6 @@ class Point{
 	}
 }
 
-/*
-* A helper for drawing SVG lines. Expects two points to connect.
-*/
-class Line {
-	constructor(source, target){
-		this.source = source;
-		this.target = target;
-	}
-}
 
 /*
 * Points on the secondary grid play a different role, they 
