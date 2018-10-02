@@ -22,15 +22,44 @@
 <script src="/celtic/js/celtic_base.js"></script>
 <script src="/celtic/js/celtic_display.js"></script>
 <script>
-let grid = new Grid(5,4);
-grid.initialize();
-grid.borders();
-let display =  new RibbonKnotDisplay(grid, 40, 'black', 'white');
-//new PositiveKnotDisplay(grid,40);
 $(document).ready(function(){
 	let knot = document.getElementById('knot');
-	knot.innerHTML = display.init().build();
+	knot.innerHTML = bigRandom(); //use functions defined below
 });
+
+
+//some knots to try in code above.
+function trefoil(){
+	let grid = new Grid(3,3);
+	grid.initialize();
+	grid.borders();
+	grid.from(1,3).to(3,3);
+	let display =  new RibbonKnotDisplay(grid, 40, 'white', 'darkblue');
+	return display.init().build();
+};
+
+function figure8(){
+	let  grid = new Grid(3,4);
+	grid.initialize();
+	grid.borders();
+	grid.from(1,1).to(1,3);
+	grid.from(3,1).to(5,1);
+	grid.from(3,3).to(5,3);
+	
+	let display =  new RibbonKnotDisplay(grid, 40, 'lightblue', 'orangered');
+	return display.init().build();	
+}
+
+function bigRandom(){
+	let  grid = new Grid(10,10);
+	grid.initialize();
+	grid.borders();
+	grid.from(1,1).to(17,17);
+	grid.randomLines();
+	let display =  new RibbonKnotDisplay(grid, 22, 'white', 'black');
+	return display.init().build();	
+}
+
 
 </script>
 <body>
