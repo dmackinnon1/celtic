@@ -1,6 +1,9 @@
 "use strict";
-
-/*
+/**
+* Classes and functions in this script file are to provide
+* decorative renderings of knots - ony dependency is on celtic_base.js.
+*
+*
 * KnotDisplay classes provide different ways of displaying 
 * the knot defined by a Grid object. They use DisplayData objects
 * to store display information about the grid before generating

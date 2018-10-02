@@ -159,8 +159,58 @@ class Node extends Point {
 			return true;
 		}
 		return false;
-	}	
+	}
+	
+	hasJunction(){
+		return this.hasNSJunction() || this.hasEWJunction();
+	}
+
+	getOneStepConnected(){
+		let connected = [this];
+		if (this.north() !== null && this.north().hasNSJunction()){
+			connected.push(this.northNorth());
+		}
+		if (this.south() !== null && this.south().hasNSJunction()){
+			connected.push(this.southSouth());
+		}
+		if (this.east() !== null && this.east().hasEWJunction()){
+			connected.push(this.eastEast());
+		}
+		if (this.west() !== null && this.west().hasEWJunction()){
+			connected.push(this.westWest());
+		}
+		return connected;		
+	}
+
+	getFullConnected(){
+		let connectedSet = new Set(this.getOneStepConnected());
+		let currentSize = connectedSet.size;
+		let nextSet = new Set(connectedSet);
+		do {
+			connectedSet = new Set(nextSet);
+			connectedSet.forEach(function(value1, value2, set){
+				let others = value2.getOneStepConnected();
+				for (let x in others){
+					nextSet.add(others[x]);
+				}
+			});
+		} while (nextSet.size != connectedSet.size);
+		return nextSet;
+	}
+
 }
+
+function setsOverlap(setA,setB){
+	let arrayA = Array.from(setA);
+	for (let a in arrayA){
+		let element = arrayA[a];
+		if (setB.has(element)){
+			return true;
+		}
+	}
+	return false;
+}
+
 
 /*
 * A connector between two secondary nodes, passes through
