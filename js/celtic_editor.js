@@ -1,7 +1,8 @@
 "use strict";
 /*
 * Classes and functions in this script file are to provide an editible
-* representation of the knot. Depends on celtic_base.js and celtic_display.js.
+* representation of the knot. Depends on celtic_base.js, celtic_display.js, bldrs.js
+* and evnts.js.
 *
 * There are three parts to the knot editor
 * - a specialized KnotDisplay class
@@ -89,11 +90,12 @@ class EditDisplay extends KnotDisplay {
 
 //functions and singleton to accompany EditableKnotSVG
 let interactive = {};
-interactive.knot = null;
+interactive.knot = null; // knot graph object
 interactive.mode = 'show'; // edit or show
 interactive.format = 'negative'; // positive | negative
-interactive.displayObject = null;
-interactive.displayDiv = null;
+interactive.displayObject = null; //live display object that provids svg
+interactive.displayDiv = null; // div in html that will hold the display
+interactive.refresh = "refresh"; //event name used in evnt framework
 
 /*
 * Functions used with EditDisply
@@ -131,6 +133,7 @@ function primaryMouseOut(event){
 function refreshInteractive(){
 	refreshInteractiveDisplayObject();
 	interactive.displayDiv.innerHTML = interactive.displayObject.init().build();
+	evnts.fireEvent(interactive.refresh);
 };
 
 function refreshInteractiveDisplayObject(){

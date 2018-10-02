@@ -200,18 +200,6 @@ class Node extends Point {
 
 }
 
-function setsOverlap(setA,setB){
-	let arrayA = Array.from(setA);
-	for (let a in arrayA){
-		let element = arrayA[a];
-		if (setB.has(element)){
-			return true;
-		}
-	}
-	return false;
-}
-
-
 /*
 * A connector between two secondary nodes, passes through
 * a primary node.

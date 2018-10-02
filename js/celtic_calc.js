@@ -44,6 +44,5 @@ function regionCount(grid){
 			regions.push(newSet);
 		}
 	}
-	console.log(regions);
 	return regions.length;
 }

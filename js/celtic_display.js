@@ -1,7 +1,7 @@
 "use strict";
 /**
 * Classes and functions in this script file are to provide
-* decorative renderings of knots - ony dependency is on celtic_base.js.
+* decorative renderings of knots - dependencies is on celtic_base.js and bldrs.js.
 *
 *
 * KnotDisplay classes provide different ways of displaying 
@@ -284,14 +284,7 @@ class BeveledDisplayData extends DisplayData {
 		if(node.west() != null && node.west().hasEWJunction()
 			&& node.north() != null && node.north().hasNSJunction()){
 			this.polygon.push(new Point(node.x, node.y));
-		}		
-		if (sideCount == 4){
-			this.polygon = [];
-			this.polygon.push(new Point(node.x-1,node.y-1));
-			this.polygon.push(new Point(node.x-1,node.y+1));
-			this.polygon.push(new Point(node.x+1,node.y+1));
-			this.polygon.push(new Point(node.x+1,node.y-1));		
-		} 
+		}		 
 	}
 
 
