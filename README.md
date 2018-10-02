@@ -28,7 +28,7 @@ knotDiv.innerHTML = display.init().build();
 ```
 ![example](https://raw.githubusercontent.com/dmackinnon1/celtic/master/imgs/blue_trefoil.png)
 
-### example 2 - Figure Eight
+### example 2 - The Figure Eight
 
 ```{javascript}
 //setup the grid, height 3, width 4 (results in x from 0 to 6, y from 0 to 4)
@@ -46,7 +46,7 @@ knotDiv.innerHTML = display.init().build();
 ```
 ![example](https://raw.githubusercontent.com/dmackinnon1/celtic/master/imgs/orange_figure8.png)
 
-### example 3 - A Random knot pattern
+### example 3 - A Random Knot Pattern
 
 ```{javascript}
 //setup the grid, height 10, width 10 (results in x from 0 to 18, y from 0 to 18)
