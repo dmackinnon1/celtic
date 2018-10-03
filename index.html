@@ -28,9 +28,22 @@
 <script>
 //calculations
 let calculate = function(){
-	let description = "This pattern has " + crossingCount(interactive.knot) + " crossings.";
+	let crossings = crossingCount(interactive.knot);
+	let description = "";
+	if (crossings == 1) {
+		description += "This pattern has one crossing."
+	} else {
+		description += "This pattern has " + crossings + " crossings.";
+	}
 	description += " It divides the plane into " + regionCount(interactive.knot) + " regions,";
-	description += " including the outside border."
+	description += " including the outside border.";
+	let loops = loopCount(interactive.knot);
+	if (loops === 1){
+		description += " There is one closed loop in this pattern.";
+	} else {
+		description += " There are " + loopCount(interactive.knot);
+		description += " closed loops that make up the pattern.";
+	}
 	$("#descriptionDiv").html(description);
 };	
 //setting up the interface
