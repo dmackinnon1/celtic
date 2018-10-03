@@ -58,13 +58,14 @@ function regionCount(grid){
 * grid, and determines the individual "strands" of paths
 * that pass by each Point.
 *
-* A Strand represents a fragment of a Loop that exists
+* A Strand represents a fragment of a Path that exists
 * in the neighbourhood of a primary Grid Point. Strands
 * around a primary grid point are collected in StrandGroups
 * The structure of the Strands around a primary Point is completely
 * determined by the Junctions that go through the primary Point.
 * Once all the StrandGroups are calculated, the individual Strands
-* can be collected together into Loops, and the Loops can be counted.
+* can be collected together into closed Paths, and the 
+* Paths can be counted.
 */
 
 class Strand {
