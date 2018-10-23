@@ -142,7 +142,7 @@ function refreshInteractiveDisplayObject(){
 	} else {
 		if (interactive.format == 'positive'){
 			interactive.displayObject = 
-				new RibbonKnotDisplay(interactive.knot, interactive.scale, 
+				new PositiveKnotDisplay(interactive.knot, interactive.scale, 
 					interactive.foreground, interactive.background);
 		} else {
 			interactive.displayObject = new BeveledKnotDisplay(interactive.knot, interactive.scale,
