@@ -315,7 +315,6 @@ class PrimaryDisplayData extends DisplayData {
 	}
 
 	lineCalc(strandGroup){
-		console.log(strandGroup);		
 		this.lines = [];
 		let x = strandGroup.point.x;
 		let y = strandGroup.point.y;
@@ -394,7 +393,6 @@ class PrimaryKnotDisplay extends BasicKnotDisplay {
 		let pb = new PathBuilder(this.g);
 		pb.buildAllStrands();
 		let v = pb.strandGroups.values()
-		console.log(v);
 		let val = v.next().value;
 		while(val !== undefined) {
 			let d = this.newDisplayData();
