@@ -321,9 +321,9 @@ class PrimaryDisplayData extends DisplayData {
 		let y = strandGroup.point.y;
 		let strand = strandGroup.getStrand(0,1);		
 		if (strand != null) {
-			this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x, y-(1/4))));
-			this.lines.push(new Line(new Point(x, y-(1/4)),new Point(x+(1/2), y-(1/2))));
-			this.circles.push(new Point(x,y-(1/4)));
+			this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x, y-(1/3))));
+			this.lines.push(new Line(new Point(x, y-(1/3)),new Point(x+(1/2), y-(1/2))));
+			this.circles.push(new Point(x,y-(1/3)));
 			this.circles.push(new Point(x-(1/2),y-(1/2)));
 			this.circles.push(new Point(x+(1/2),y-(1/2)));
 		}
@@ -350,27 +350,27 @@ class PrimaryDisplayData extends DisplayData {
 
 		strand = strandGroup.getStrand(0,3);
 		if (strand != null) {
-			this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x-(1/4), y)));
-			this.lines.push(new Line(new Point(x-(1/4), y), new Point(x-(1/2), y+(1/2))));
-			this.circles.push(new Point(x-(1/4),y));
+			this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x-(1/3), y)));
+			this.lines.push(new Line(new Point(x-(1/3), y), new Point(x-(1/2), y+(1/2))));
+			this.circles.push(new Point(x-(1/3),y));
 			this.circles.push(new Point(x-(1/2),y-(1/2)));
 			this.circles.push(new Point(x-(1/2),y+(1/2)));
 		}
 
 		strand = strandGroup.getStrand(1,2);
 		if (strand != null) {
-			this.lines.push(new Line(new Point(x+(1/2), y-(1/2)),new Point(x+(1/4), y)));
-			this.lines.push(new Line(new Point(x+(1/4), y), new Point(x+(1/2), y+(1/2))));
-			this.circles.push(new Point(x+(1/4),y));
+			this.lines.push(new Line(new Point(x+(1/2), y-(1/2)),new Point(x+(1/3), y)));
+			this.lines.push(new Line(new Point(x+(1/3), y), new Point(x+(1/2), y+(1/2))));
+			this.circles.push(new Point(x+(1/3),y));
 			this.circles.push(new Point(x+(1/2),y-(1/2)));
 			this.circles.push(new Point(x+(1/2),y+(1/2)));
 		}
 
 		strand = strandGroup.getStrand(2,3);
 		if (strand != null) {
-			this.lines.push(new Line(new Point(x+(1/2), y+(1/2)),new Point(x, y+(1/4))));
-			this.lines.push(new Line(new Point(x, y+(1/4)), new Point(x-(1/2), y+(1/2))));
-			this.circles.push(new Point(x,y+(1/4)));
+			this.lines.push(new Line(new Point(x+(1/2), y+(1/2)),new Point(x, y+(1/3))));
+			this.lines.push(new Line(new Point(x, y+(1/3)), new Point(x-(1/2), y+(1/2))));
+			this.circles.push(new Point(x,y+(1/3)));
 			this.circles.push(new Point(x+(1/2),y+(1/2)));
 			this.circles.push(new Point(x-(1/2),y+(1/2)));
 		}
@@ -430,12 +430,6 @@ class PrimaryKnotDisplay extends BasicKnotDisplay {
 			}
 			let xline = node.crossing;
 			if (xline != null) {
-				/*let crossing1 = new Bldr("circle").att("cx",node.center.x*this.scale)
-					.att("cy", node.center.y*this.scale)
-					.att("r", (this.edge/2)*(1.5))
-					.att("fill", this.foregroundColor);
-				this.svgBldr.elem(crossing1);
-				*/
 				let plist = "";
 				for (let p in node.center){
 					let point = node.center[p];
