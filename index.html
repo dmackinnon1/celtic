@@ -144,36 +144,37 @@ function resetButtons(){
 		$("#negative").removeClass('btn-secondary');
 		$("#positive").removeClass('btn-primary');
 		$("#positive").addClass('btn-secondary');
-	} else {
+		$("#primary").removeClass('btn-primary');
+		$("#primary").addClass('btn-secondary');
+	} else if (interactive.format == 'positive'){
 		$("#positive").addClass('btn-primary');
 		$("#positive").removeClass('btn-secondary');
 		$("#negative").removeClass('btn-primary');
-		$("#negative").addClass('btn-secondary');		
+		$("#negative").addClass('btn-secondary');
+		$("#primary").removeClass('btn-primary');
+		$("#primary").addClass('btn-secondary');		
+	} else if (interactive.format == 'primary'){
+		$("#negative").removeClass('btn-primary');
+		$("#negative").addClass('btn-secondary');
+		$("#positive").removeClass('btn-primary');
+		$("#positive").addClass('btn-secondary');
+		$("#primary").addClass('btn-primary');
+		$("#primary").removeClass('btn-secondary');
 	}
 }
+
 function foreground(c='white'){
-	if (interactive.format == 'negative'){
-		interactive.forground = c;
-	} else {
-		interactive.background = c;
-	}
+	interactive.foreground = c;	
 	refreshInteractive();
 }
+
 function background(c='black'){
-	if (interactive.format == 'negative'){
-		interactive.background = c;
-	} else {
-		interactive.foreground = c;
-	}
+	interactive.background = c;
 	refreshInteractive();
 }
 //the two types of formats reverse the foreground and background
 function format(f='negative'){
 	if (interactive.format != f){
-		let oldBackground = interactive.background;
-		let oldForeground = interactive.foreground;
-		interactive.foreground = oldBackground;
-		interactive.background = oldForeground;
 		interactive.format = f;
 		refreshInteractive();
 		resetButtons();
@@ -215,7 +216,7 @@ function randomize(){
 		<div class='centered'>
 		<form>
 			height: <input type="number" id="height" min="2" max="20" step="1" value="3">
-			width: <input type="number" id="width" min="2" max="20" step="1" value="3">
+			width: <input type="number" id="width" min="2" max="20" step="1" value="5">
 			scale: <input type="number" id="scale" min="5" max="100" step="1" value="40">		 
 		</form>
 		</div>
@@ -236,15 +237,18 @@ function randomize(){
 			<div class="btn-group btn-group-sm" role="group">	
 			<button id="negative" class="btn btn-secondary" onclick="format('negative')">Style 1</button>
 			<button id="positive" class="btn btn-secondary" onclick="format('positive')">Style 2</button>
+			<button id="primary" class="btn btn-secondary" onclick="format('primary')">Style 3</button>
+			</div>
 		</div>
 		<br>
 		<br>
+		<div class='centered'>
 		<div class="btn-group btn-group-md" role="group">	
 			<button id="show" class="btn btn-primary">Show</button>
 			<button id="edit" class="btn btn-secondary">Edit</button>
 			<button id="randomize" class="btn btn-secondary">Random</button>	
-			<button id="reset" class="btn btn-secondary">Reset</button>
-		</div>		
+			<button id="reset" class="btn btn-secondary">Reset</button>		
+		</div>
 		<br>
 		<br>
 		<div class="btn-group">
@@ -286,8 +290,8 @@ function randomize(){
     			<a class="dropdown-item" onclick="background('orangered')"href="#">orangered</a>
   			</div>
 		</div>
-		</div>	
 		</div>
+		</div>	
 		<hr>
 		<div class='centered'>
 		<div class="btn-group btn-group-md" role="group">	

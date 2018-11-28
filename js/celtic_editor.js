@@ -92,7 +92,7 @@ class EditDisplay extends KnotDisplay {
 let interactive = {};
 interactive.knot = null; // knot graph object
 interactive.mode = 'show'; // edit or show
-interactive.format = 'negative'; // positive | negative
+interactive.format = 'negative'; // positive | negative | primary
 interactive.displayObject = null; //live display object that provids svg
 interactive.displayDiv = null; // div in html that will hold the display
 interactive.refresh = "refresh"; //event name used in evnt framework
@@ -143,10 +143,15 @@ function refreshInteractiveDisplayObject(){
 		if (interactive.format == 'positive'){
 			interactive.displayObject = 
 				new PositiveKnotDisplay(interactive.knot, interactive.scale, 
-					interactive.foreground, interactive.background);
-		} else {
+					interactive.background, interactive.foreground);
+		} else if (interactive.format == 'negative') {
 			interactive.displayObject = new BeveledKnotDisplay(interactive.knot, interactive.scale,
 				interactive.foreground, interactive.background);		
+		} else if (interactive.format == 'primary') {
+			interactive.displayObject = new PrimaryKnotDisplay(interactive.knot, interactive.scale,
+				interactive.background, interactive.foreground);											
+		} else {
+			console.log("unknown format for display: " + interactive.format);
 		}
 	}
 };

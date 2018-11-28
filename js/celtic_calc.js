@@ -124,6 +124,16 @@ class StrandGroup {
 		let pair = [foundStrand, end];
 		return pair;
 	}
+
+	getStrand(end1, end2){
+		for (let s in this.strands){
+			let strand = this.strands[s];
+			if (strand.hasEnd(end1) && strand.hasEnd(end2)){
+				return strand;
+			}
+		}
+		return null;
+	}
 	
 	calculateStrands(){
 		if (this.point.junctions.length === 0){
@@ -282,3 +292,169 @@ function loopCount(grid){
 	return pb.allPaths.length;
 }
 
+/**
+* Below is a display type that uses the path calculation.
+*/
+
+class PrimaryDisplayData extends DisplayData {
+	constructor(){
+		super();
+		this.lines = [];
+		this.circles = [];
+		this.crossing = null;
+		this.center = [];
+	}
+
+	polyCalc(strandGroup){
+		let x = strandGroup.point.x;
+		let y = strandGroup.point.y;
+		this.center.push(new Point(x, y-(1/4)));
+		this.center.push(new Point(x+(1/4), y));
+		this.center.push(new Point(x, y+(1/4)));
+		this.center.push(new Point(x-(1/4), y));		
+	}
+
+	lineCalc(strandGroup){
+		console.log(strandGroup);		
+		this.lines = [];
+		let x = strandGroup.point.x;
+		let y = strandGroup.point.y;
+		let strand = strandGroup.getStrand(0,1);		
+		if (strand != null) {
+			this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x, y-(1/4))));
+			this.lines.push(new Line(new Point(x, y-(1/4)),new Point(x+(1/2), y-(1/2))));
+			this.circles.push(new Point(x,y-(1/4)));
+			this.circles.push(new Point(x-(1/2),y-(1/2)));
+			this.circles.push(new Point(x+(1/2),y-(1/2)));
+		}
+		
+		strand = strandGroup.getStrand(0,2);
+		if (strand != null) {			
+			this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x+(1/2), y+(1/2))));
+			this.circles.push(new Point(x-(1/2),y-(1/2)));
+			this.circles.push(new Point(x+(1/2),y+(1/2)));
+			if (strandGroup.point.x % 2 == 0){
+				this.crossing = new Line(new Point(x-(1/2), y-(1/2)),new Point(x+(1/2), y+(1/2)));
+			}
+		}
+		
+		strand = strandGroup.getStrand(1,3);
+		if (strand != null) {
+			this.lines.push(new Line(new Point(x+(1/2), y-(1/2)),new Point(x-(1/2), y+(1/2))));
+			this.circles.push(new Point(x+(1/2),y-(1/2)));
+			this.circles.push(new Point(x-(1/2),y+(1/2)));
+			if (strandGroup.point.x % 2 == 1){
+				this.crossing = new Line(new Point(x+(1/2), y-(1/2)),new Point(x-(1/2), y+(1/2)));
+			}
+		}
+
+		strand = strandGroup.getStrand(0,3);
+		if (strand != null) {
+			this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x-(1/4), y)));
+			this.lines.push(new Line(new Point(x-(1/4), y), new Point(x-(1/2), y+(1/2))));
+			this.circles.push(new Point(x-(1/4),y));
+			this.circles.push(new Point(x-(1/2),y-(1/2)));
+			this.circles.push(new Point(x-(1/2),y+(1/2)));
+		}
+
+		strand = strandGroup.getStrand(1,2);
+		if (strand != null) {
+			this.lines.push(new Line(new Point(x+(1/2), y-(1/2)),new Point(x+(1/4), y)));
+			this.lines.push(new Line(new Point(x+(1/4), y), new Point(x+(1/2), y+(1/2))));
+			this.circles.push(new Point(x+(1/4),y));
+			this.circles.push(new Point(x+(1/2),y-(1/2)));
+			this.circles.push(new Point(x+(1/2),y+(1/2)));
+		}
+
+		strand = strandGroup.getStrand(2,3);
+		if (strand != null) {
+			this.lines.push(new Line(new Point(x+(1/2), y+(1/2)),new Point(x, y+(1/4))));
+			this.lines.push(new Line(new Point(x, y+(1/4)), new Point(x-(1/2), y+(1/2))));
+			this.circles.push(new Point(x,y+(1/4)));
+			this.circles.push(new Point(x+(1/2),y+(1/2)));
+			this.circles.push(new Point(x-(1/2),y+(1/2)));
+		}
+
+	}
+}
+
+
+class PrimaryKnotDisplay extends BasicKnotDisplay {
+
+	buildSVG(){
+		this.edge = this.scale/2;
+		this.lines();
+	}
+
+	newDisplayData(){
+		return new PrimaryDisplayData();
+	}
+
+	buildStructure(){
+		let pb = new PathBuilder(this.g);
+		pb.buildAllStrands();
+		let v = pb.strandGroups.values()
+		console.log(v);
+		let val = v.next().value;
+		while(val !== undefined) {
+			let d = this.newDisplayData();
+			d.lineCalc(val);
+			d.polyCalc(val);
+			this.displayData.push(d);	
+			val = v.next().value;
+		}	
+				
+	}
+
+	lines(){
+		for (let n in this.displayData){
+			let node = this.displayData[n];
+			for (let l in node.lines){
+				let secLine = node.lines[l];		
+				let line = new Bldr("line").att("x1",secLine.source.x*this.scale)
+					.att("y1", secLine.source.y*this.scale)
+					.att("x2", secLine.target.x*this.scale)
+					.att("y2", secLine.target.y*this.scale)
+					.att("stroke-width",this.edge).att("stroke", this.backgroundColor)
+					.att("stroke-linecap","butt");
+				this.svgBldr.elem(line);
+			}
+			for (let j in node.circles){
+				let joint = node.circles[j];		
+				let circle = new Bldr("circle").att("cx",joint.x*this.scale)
+					.att("cy", joint.y*this.scale)
+					.att("r", (this.edge/2)*(0.96))
+					.att("fill", this.backgroundColor);
+					//.att("stroke-width",this.edge/3).att("stroke", this.backgroundColor);
+				this.svgBldr.elem(circle);
+			}
+			let xline = node.crossing;
+			if (xline != null) {
+				/*let crossing1 = new Bldr("circle").att("cx",node.center.x*this.scale)
+					.att("cy", node.center.y*this.scale)
+					.att("r", (this.edge/2)*(1.5))
+					.att("fill", this.foregroundColor);
+				this.svgBldr.elem(crossing1);
+				*/
+				let plist = "";
+				for (let p in node.center){
+					let point = node.center[p];
+					plist += "" + (point.x*this.scale) + "," +(point.y*this.scale) +" ";
+				}
+				
+				let crossing1 = new Bldr("polygon").att("points",plist);
+				crossing1.att("stroke-width",this.edge).att("fill",this.foregroundColor).att("stroke", this.foregroundColor);
+				this.svgBldr.elem(crossing1);
+
+				let crossing2 = new Bldr("line").att("x1",xline.source.x*this.scale)
+					.att("y1", xline.source.y*this.scale)
+					.att("x2", xline.target.x*this.scale)
+					.att("y2", xline.target.y*this.scale)
+					.att("stroke-width",this.edge).att("stroke", this.backgroundColor)
+					.att("stroke-linecap","butt");
+				this.svgBldr.elem(crossing2);
+			}
+		}
+		return this;		
+	}	
+}
