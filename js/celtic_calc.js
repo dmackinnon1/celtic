@@ -303,6 +303,7 @@ class PrimaryDisplayData extends DisplayData {
 		this.circles = [];
 		this.crossing = null;
 		this.center = [];
+		this.rounded = true;
 	}
 
 	polyCalc(strandGroup){
@@ -320,9 +321,13 @@ class PrimaryDisplayData extends DisplayData {
 		let y = strandGroup.point.y;
 		let strand = strandGroup.getStrand(0,1);		
 		if (strand != null) {
-			this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x, y-(1/3))));
-			this.lines.push(new Line(new Point(x, y-(1/3)),new Point(x+(1/2), y-(1/2))));
-			this.circles.push(new Point(x,y-(1/3)));
+			if (!this.rounded){
+				this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x+(1/2), y-(1/2))));
+			} else {
+				this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x, y-(1/3))));
+				this.lines.push(new Line(new Point(x, y-(1/3)),new Point(x+(1/2), y-(1/2))));
+				this.circles.push(new Point(x,y-(1/3)));
+			}
 			this.circles.push(new Point(x-(1/2),y-(1/2)));
 			this.circles.push(new Point(x+(1/2),y-(1/2)));
 		}
@@ -349,27 +354,39 @@ class PrimaryDisplayData extends DisplayData {
 
 		strand = strandGroup.getStrand(0,3);
 		if (strand != null) {
-			this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x-(1/3), y)));
-			this.lines.push(new Line(new Point(x-(1/3), y), new Point(x-(1/2), y+(1/2))));
-			this.circles.push(new Point(x-(1/3),y));
+			if (!this.rounded){
+				this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x-(1/2), y+(1/2))));
+			} else {
+				this.lines.push(new Line(new Point(x-(1/2), y-(1/2)),new Point(x-(1/3), y)));
+				this.lines.push(new Line(new Point(x-(1/3), y), new Point(x-(1/2), y+(1/2))));
+				this.circles.push(new Point(x-(1/3),y));
+			}
 			this.circles.push(new Point(x-(1/2),y-(1/2)));
 			this.circles.push(new Point(x-(1/2),y+(1/2)));
 		}
 
 		strand = strandGroup.getStrand(1,2);
 		if (strand != null) {
-			this.lines.push(new Line(new Point(x+(1/2), y-(1/2)),new Point(x+(1/3), y)));
-			this.lines.push(new Line(new Point(x+(1/3), y), new Point(x+(1/2), y+(1/2))));
-			this.circles.push(new Point(x+(1/3),y));
+			if (!this.rounded){
+				this.lines.push(new Line(new Point(x+(1/2), y-(1/2)),new Point(x+(1/2), y+(1/2))));
+			} else {
+				this.lines.push(new Line(new Point(x+(1/2), y-(1/2)),new Point(x+(1/3), y)));
+				this.lines.push(new Line(new Point(x+(1/3), y), new Point(x+(1/2), y+(1/2))));
+				this.circles.push(new Point(x+(1/3),y));
+			}
 			this.circles.push(new Point(x+(1/2),y-(1/2)));
 			this.circles.push(new Point(x+(1/2),y+(1/2)));
 		}
 
 		strand = strandGroup.getStrand(2,3);
 		if (strand != null) {
-			this.lines.push(new Line(new Point(x+(1/2), y+(1/2)),new Point(x, y+(1/3))));
-			this.lines.push(new Line(new Point(x, y+(1/3)), new Point(x-(1/2), y+(1/2))));
-			this.circles.push(new Point(x,y+(1/3)));
+			if (!this.rounded){
+				this.lines.push(new Line(new Point(x+(1/2), y+(1/2)),new Point(x-(1/2), y+(1/2))));
+			} else {
+				this.lines.push(new Line(new Point(x+(1/2), y+(1/2)),new Point(x, y+(1/3))));
+				this.lines.push(new Line(new Point(x, y+(1/3)), new Point(x-(1/2), y+(1/2))));
+				this.circles.push(new Point(x,y+(1/3)));
+			}
 			this.circles.push(new Point(x+(1/2),y+(1/2)));
 			this.circles.push(new Point(x-(1/2),y+(1/2)));
 		}
@@ -435,7 +452,7 @@ class PrimaryKnotDisplay extends BasicKnotDisplay {
 				}
 				
 				let crossing1 = new Bldr("polygon").att("points",plist);
-				crossing1.att("stroke-width",this.edge).att("fill",this.foregroundColor).att("stroke", this.foregroundColor);
+				crossing1.att("stroke-width",this.edge/2).att("fill",this.foregroundColor).att("stroke", this.foregroundColor);
 				this.svgBldr.elem(crossing1);
 
 				let crossing2 = new Bldr("line").att("x1",xline.source.x*this.scale)

@@ -113,10 +113,10 @@ function reset(){
 		interactive.mode='show';
 	}
 	if (interactive.foreground == null){
-		interactive.foreground = "white";
+		interactive.foreground = "black";
 	}
 	if (interactive.background == null){
-		interactive.background = "black";
+		interactive.background = "white";
 	}
 	resetButtons();
 	refreshInteractive();
@@ -163,12 +163,12 @@ function resetButtons(){
 	}
 }
 
-function foreground(c='white'){
+function foreground(c='black'){
 	interactive.foreground = c;	
 	refreshInteractive();
 }
 
-function background(c='black'){
+function background(c='white'){
 	interactive.background = c;
 	refreshInteractive();
 }
@@ -217,7 +217,7 @@ function randomize(){
 		<form>
 			height: <input type="number" id="height" min="2" max="20" step="1" value="3">
 			width: <input type="number" id="width" min="2" max="20" step="1" value="5">
-			scale: <input type="number" id="scale" min="5" max="100" step="1" value="40">		 
+			scale: <input type="number" id="scale" min="5" max="100" step="1" value="35">		 
 		</form>
 		</div>
 		<br>
