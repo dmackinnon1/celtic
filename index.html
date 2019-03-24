@@ -101,8 +101,8 @@ $(document).ready(function(){
 });
 
 function reset(){
-	let width = parseInt($('#width').val());
-	let height = parseInt($('#height').val());
+	let width = parseInt($('#width').val()) + 1;
+	let height = parseInt($('#height').val()) + 1 ;
 	
 	interactive.knot = new Grid(height,width);
 	interactive.knot.initialize().borders();
@@ -215,8 +215,8 @@ function randomize(){
 		<hr>	
 		<div class='centered'>
 		<form>
-			height: <input type="number" id="height" min="2" max="20" step="1" value="3">
-			width: <input type="number" id="width" min="2" max="20" step="1" value="5">
+			height: <input type="number" id="height" min="1" max="20" step="1" value="3">
+			width: <input type="number" id="width" min="1" max="20" step="1" value="5">
 			scale: <input type="number" id="scale" min="5" max="100" step="1" value="35">		 
 		</form>
 		</div>
