@@ -105,6 +105,11 @@ class Line {
 	constructor(source, target){
 		this.source = source;
 		this.target = target;
+		this.decorator - null;
+	}
+	setDecorator(d){
+		this.decorator = d;
+		return this;
 	}
 }
 

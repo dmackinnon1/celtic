@@ -9,7 +9,14 @@ class Point{
 		this.y = y;
 		this.grid = grid;
 		this.junctions=[];
+		this.decorator = null;
 	}
+	
+	setDecorator(d){
+		this.decorator = d;
+		return this;
+	}
+
 	distance(point){
 		return Math.sqrt(Math.pow((this.x - point.x),2) + Math.pow((this.y - point.y), 2));
 	}
