@@ -178,7 +178,16 @@ function format(f='negative'){
 		interactive.format = f;
 		refreshInteractive();
 		resetButtons();
+	} else if (f=='primary'){
+		//force change in case color scheme has modified
+		refreshInteractive()
 	}
+}
+
+function palletteFormatChoice(color){
+	interactive.colorPallette = pallettes[color];
+	format('primary');pallettes
+	console.log(interactive.colorPallette);
 }
 
 function randomize(){
@@ -237,7 +246,23 @@ function randomize(){
 			<div class="btn-group btn-group-sm" role="group">	
 			<button id="negative" class="btn btn-secondary" onclick="format('negative')">square</button>
 			<button id="positive" class="btn btn-secondary" onclick="format('positive')">smooth</button>
-			<button id="primary" class="btn btn-secondary" onclick="format('primary')">colored paths</button>
+			<!--button id="primary" class="btn btn-secondary" onclick="format('primary')">colored paths</button-->
+			<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    		colored paths
+  			</button>
+  			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    			<a class="dropdown-item" onclick="palletteFormatChoice('blues')" href="#">blues</a>
+    			<a class="dropdown-item" onclick="palletteFormatChoice('gryffindor')" href="#">gryffindor</a>
+    			<a class="dropdown-item" onclick="palletteFormatChoice('greys')" href="#">greys</a>
+    			<a class="dropdown-item" onclick="palletteFormatChoice('pinks')" href="#">pinks</a>
+    			<a class="dropdown-item" onclick="palletteFormatChoice('slytherin')" href="#">slytherin</a>		
+    			<a class="dropdown-item" onclick="palletteFormatChoice('neon')" href="#">neon</a>
+    			<a class="dropdown-item" onclick="palletteFormatChoice('seafoam')" href="#">seafoam</a>
+    			<a class="dropdown-item" onclick="palletteFormatChoice('ravenclaw')" href="#">ravenclaw</a>   			
+    			<a class="dropdown-item" onclick="palletteFormatChoice('metro')" href="#">metro</a>
+    			<a class="dropdown-item" onclick="palletteFormatChoice('hufflepuff')" href="#">hufflepuff</a>		
+    			<a class="dropdown-item" onclick="palletteFormatChoice('pastel')" href="#">pastel</a>
+  			</div>
 			</div>
 		</div>
 		<br>

@@ -415,6 +415,9 @@ class Decorator {
 	decorate(){
 		//let colors = ['blue','red','pink','lightgreen','green'];
 		let colors = ['#a2b9bc', '#b2ad7f','#878f99','#6b5b95','#d6cbd3','#eca1a6','#bdcebe','#82b74b','#405d27'];
+		if (interactive.colorPallette != undefined){
+			colors = interactive.colorPallette;
+		} 
 		return colors[this.index%colors.length];
 	}
 }
@@ -506,3 +509,18 @@ class PrimaryKnotDisplay extends BasicKnotDisplay {
 		return this;		
 	}	
 }
+
+let pallettes = {
+	'blues':['#011f4b','#03396c','#005b96','#6497b1','#b3cde0'],
+	'gryffindor': ['#740001','#ae0001','#eeba30','#d3a625','#000000'],
+	'greys':['#999999','#777777','#555555','#333333','#111111'],
+	'pinks':['#ff00a9','#fb9f9f','#ff0065','#ffbfd3','#fb5858'],
+	'metro':['#d11141','#00b159','#00aedb',	'#f37735','#ffc425'],
+	'pastel':['#ffb3ba','#ffdfba','#ffffba','#baffc9','#bae1ff'],
+	'ravenclaw': ['#0e1a40','#222f5b','#5d5d5d','#946b2d','#000000'],
+	'slytherin':['#1a472a','#2a623d','#5d5d5d','#aaaaaa','#000000'],
+	'hufflepuff':['#ecb939','#f0c75e','#726255','#372e29','#000000'],
+	'neon' : ['#fe0000','#fdfe02','#0bff01','#011efe','#fe00f6'],
+	'seafoam' :['#a3c1ad','#a0d6b4','#5f9ea0','#317873','#49796b']	
+}
+
