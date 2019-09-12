@@ -20,32 +20,40 @@
 }
 </style>
 <script src="js/bldrs.js"></script>
+<script src="js/latex-builders.js"></script>
+<script src="js/tikZBldr.js"></script>
 <script src="js/evnts.js"></script>
 <script src="js/celtic_base.js"></script> 
 <script src="js/celtic_display.js"></script>
 <script src="js/celtic_editor.js?ver=1"></script>
 <script src="js/celtic_calc.js?ver=1"></script>
+
 <script>
 //calculations
 let calculate = function(){
-	let crossings = crossingCount(interactive.knot);
+	$("#descriptionDiv").html(calculationText(interactive.knot));
+};
+
+function calculationText(k){
+	let crossings = crossingCount(k);
 	let description = "";
 	if (crossings == 1) {
 		description += "This pattern has one crossing."
 	} else {
 		description += "This pattern has " + crossings + " crossings.";
 	}
-	description += " It divides the plane into " + regionCount(interactive.knot) + " regions,";
+	description += " It divides the plane into " + regionCount(k) + " regions,";
 	description += " including the outside border.";
-	let loops = loopCount(interactive.knot);
+	let loops = loopCount(k);
 	if (loops === 1){
 		description += " There is one closed loop in this pattern.";
 	} else {
-		description += " There are " + loopCount(interactive.knot);
+		description += " There are " + loopCount(k);
 		description += " closed loops that make up the pattern.";
 	}
-	$("#descriptionDiv").html(description);
-};	
+	return description;
+}
+	
 //setting up the interface
 $(document).ready(function(){
 	$("#show").on("click", function(event){
@@ -97,8 +105,31 @@ $(document).ready(function(){
 
 	interactive.displayDiv = document.getElementById('knot');
 	evnts.addCallback(interactive.refresh, calculate);
+	evnts.addCallback(interactive.refresh, updateOverleaf);
 	reset();
 });
+
+function updateOverleaf(){
+	let latex = latexDocument(interactive.knot);          	
+    $("#overleaf").attr("value",latex)
+}
+
+function latexDocument(k){
+            let doc = new LaTeXDoc();
+            let docEnv = doc.defaultPackages()
+	           .command("pagestyle","empty",true)
+	           .package("tikz")
+	           .command("usetikzlibrary","positioning",true)
+	           .env()
+	           .begin("document");
+            docEnv.env().begin("center").command("Huge","Celtic Knot", true);
+            let knotDisplay = new PositiveKnotDisplay(k, interactive.scale,
+				interactive.background, interactive.foreground);	
+           	knotDisplay.init();
+           	docEnv.p(knotDisplay.buildTikZ());
+           	docEnv.p(calculationText(k));
+           	return encodeURI(doc.build());
+      }
 
 function reset(){
 	let width = parseInt($('#width').val()) + 1;
@@ -276,6 +307,13 @@ function randomize(){
 		</div>
 		<br>
 		<br>
+		<div>
+		<form method="POST" action="https://www.overleaf.com/docs" target="_blank" class="ng-pristine ng-valid">
+        <div class="form-group text-center"><input type="hidden" id='overleaf' name="encoded_snip" value="" autocomplete="off">
+        <input id="overleaf-btn" class="btn-success btn btn-sm" type="submit" value="Open in Overleaf">
+        </div>
+        </form>
+        </div> 
 		<div class="btn-group">
 		<div class="dropdown">
   			<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

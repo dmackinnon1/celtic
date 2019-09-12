@@ -54,6 +54,7 @@ class KnotDisplay {
 		return this.svgBldr.build();
 	}
 
+
 	buildStructure(){
 		//no calculation required
 	}
@@ -459,6 +460,7 @@ class PositiveKnotDisplay extends BasicKnotDisplay {
 	buildSVG(){
 		this.edge = this.scale/2;
 		this.lines();
+		//console.log(this.buildTikZ());
 	}
 
 	newDisplayData(){
@@ -490,6 +492,23 @@ class PositiveKnotDisplay extends BasicKnotDisplay {
 		}
 		return this;		
 	}	
+
+	buildTikZ() {
+		this.build();//ToDo: builds unnecessary svg structures
+		let tikZ = new TikZBuilder();
+		let newScale = this.scale/40; //scaling factor - need to reduce size for tikZ
+		for (let n in this.displayData){
+			let node = this.displayData[n];
+			for (let l in node.lines){
+				let secLine = node.lines[l];
+				tikZ.addLine(secLine.source.x*newScale,
+					 secLine.source.y*newScale,
+					  secLine.target.x*newScale,
+					   secLine.target.y*newScale);						
+			}
+		}
+		return tikZ.build();	
+	}
 }
 
 class RibbonKnotDisplay extends PositiveKnotDisplay {
