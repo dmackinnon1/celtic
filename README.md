@@ -1,9 +1,6 @@
 # celtic
 Generator and editors for Celtic Knot patterns.
 Please see the live example here: https://dmackinnon1.github.io/celtic.
-See these blog posts:
-- http://www.mathrecreation.com/2018/09/some-knots-and-not-knots.html
-- http://www.mathrecreation.com/2018/09/generating-celtic-knot-patterns.html
 
 The classes for doing various things with the knots are spread over a few js files:
 - **celtic_base.js** Basic knot classes.
