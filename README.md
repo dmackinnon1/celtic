@@ -1,4 +1,8 @@
-# celtic
+# celticbook
+A LaTeX learning project. The plan (not currently executed) is to create a book similar to dmackinnon1/Truchet-Book that covers some small
+set of celtic patterns created using the grid method.
+
+## Original notes (dmackinnon1/celtic)
 Generator and editors for Celtic Knot patterns.
 Please see the live example here: https://dmackinnon1.github.io/celtic.
 
